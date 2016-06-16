@@ -1,0 +1,29 @@
+# Site settings
+
+title: clicurt blog
+
+email: clicurt@gmail.com
+
+description: > # this means to ignore newlines until "baseurl:"
+  Write an awesome description for your new site here. You can edit this
+  line in _config.yml. It will appear in your document head meta (for
+  Google search results) and in your feed.xml site description.
+
+#baseurl: "/clicurt-site/" # the subpath of your site, e.g. /blog/
+
+url: "http://clicurt.github.io/clicurt-site/" # the base hostname & protocol for your site
+
+twitter_username: amocurt
+
+github_username:  clicurt
+
+# Build settings
+
+markdown: kramdown
+
+highlighter: rouge
+
+encoding: utf-8
+
+baseurl: /clicurt-site/
+permalink: /blog/:year/:month/:day/:title
