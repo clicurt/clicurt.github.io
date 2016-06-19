@@ -63,6 +63,163 @@ ALTERNATE OPTIONS
 
 
 
+
+
+
+<?php echo Asset::js('jquery-3.0.0.js'); ?>
+
+
+<h1>Comments </h1>
+
+<?php echo Form::open('comments/index/<?php echo $comments->id; ?>'); ?>
+<?php foreach($comments as $comment) : ?>
+<?php $array[] = array($comment->title, $comment->create_date, $comment->tags); ?>
+<?php endforeach; ?> 
+<div class="form-group">
+	<?php echo Form::label('Category', 'category'); ?>
+	<?php echo Form::select('category', $comment->title, array(
+		'0' => 'select Category',
+		'title' => $array
+	), array('class' => 'form-control')); ?>
+</div>
+
+<?php echo Form::submit('send'); ?>
+
+<input type="hidden" name="comment_id" value="<?php echo $comment->id; ?>">
+
+<div class="actions">
+
+	
+</div>
+
+<?php echo Form::close(); ?>
+<br/>
+<style>
+table, th, td {
+    border: 1px solid black;
+}
+</style>
+
+<body>
+
+<table id="timeTable" style="width:500px; text-align:center; padding:20px">
+<?php for($i=1; $i<=2;++$i){; ?>
+<tbody>
+  <tr class="tRow" style="padding:50px; width: 500px">
+    <td> <?= $i; ?></td>
+    <td><input class="timeInput" id="hourStart" type="time" name="time" style="width: 120px"> 
+    <input class="timeInput" id="hourEnd" type= "time" name= "time" style="width: 120px" >
+    </td>
+    <td><input class="sumCell" type="text" style="width: 200px" ></td>
+  </tr>
+  </tbody>
+<?php };?>
+<tfoot>
+<tr>
+   <td colspan ="2">Total Hours:</td>
+   <td id="val"><input class="totalSum" type="text" style="width: 200px" ></td>
+</tr>
+</tfoot>
+</table>
+<br/><button id="ans">CLICK</button>
+
+</body>
+<script>
+//for(i=0;i<10;++i){
+/*
+var table = document.getElementById("timeTable");
+for (var i = 0, row; row = table.rows[i]; i++) {
+   //iterate through rows
+   //rows would be accessed using the "row" variable assigned in the for loop
+   for (var j = 0, col; col = row.cells[j]; j++) {
+     //iterate through columns
+     //columns would be accessed using the "col" variable assigned in the for loop
+   }  
+}*/
+
+
+     //iterate through cells
+     //cells would be accessed using the "cell" variable assigned in the for loop
+
+	
+$(document).ready(function(){
+	$(".timeInput").keyup(function() {
+			changes();
+	});
+}); 
+
+
+//}
+function changes(){
+   	$('.tRow').each(function(){
+		var startTime = $('#hourStart').val();
+		var	endTime = $('#hourEnd').val();
+		var	hours = 0;
+		var	minutes = 0;
+	
+		$(this).find('.timeInput').each(function(){
+				hours = endTime.split(':')[0] - startTime.split(':')[0];
+				minutes = endTime.split(':')[1] - startTime.split(':')[1];
+	
+			if(this.value.length!=0) {
+				minutes = minutes.toString().length < 2 ? '0' + minutes:minutes;
+				if(minutes < 0){ 
+					hours--;
+					minutes = 60 + minutes;
+				}
+				if((minutes >= 0)&&(minutes <= 14)){
+					minutes = 0;
+				}else if((minutes >= 15)&&(minutes <= 29)){
+					minutes = 15;
+				}else if((minutes >= 30)&&(minutes <= 44)){
+					minutes = 30;
+				}else if((minutes >= 45)&&(minutes <= 59)){
+					minutes = 45;
+				}
+				
+				hours = hours.toString().length < 2 ? '0' + hours:hours;
+			}
+		});
+		
+		$('.sumCell', this).val(hours + ':' + minutes);
+    });
+}
+</script>
+
+<script>
+	$(document).ready(function(){
+		$(".timeInput").keyup(function() {
+			$(this).keyup(function(){
+				calculateSum();
+			});
+		});
+	});
+
+	function calculateSum() {
+		var sum1 = 0;
+		var sum2 = 0;
+		//iterate through each textboxes and add the values
+		$(".sumCell").each(function() {
+			//add only if the value is number
+			if(this.value.length!=0) {
+				var arr = (this.value).split(':');
+				sum1 += parseInt(arr[0]);
+				sum2 += parseInt(arr[1]);
+				while((sum2 - 60)> 0){
+					sum1++;
+					sum2 %= 60;
+				}
+			}
+		});
+		$(".totalSum").val(sum1 + ':' + sum2);
+	}
+</script>
+
+
+
+
+
+
 </xmp>
 
 </body>
