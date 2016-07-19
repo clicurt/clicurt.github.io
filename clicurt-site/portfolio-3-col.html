@@ -227,6 +227,91 @@ EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 
 
+<?php
+foreach($result as $row){
+	$array = $row['usedate'];
+if($row['myCode'] !== null && $row['usedate'] !== '' && $row['FirstName'] !== '')	
+print_r($array[2]);
+?>
+<table style="border: 1px solid black; padding:0px">
+  <tr>
+    <th>myCode</th>
+    <th>First name</th>
+    <th>Date 1</th>
+	<th>Date 2</th>
+	<th>Date 3</th>
+  </tr>
+  <tr>
+    <td>
+	<?php
+	if($row['myCode'] > 0){
+		echo $row['myCode'] ;
+	}else{
+		echo '';
+	}
+	?>
+	
+	</td>
+	 <td>
+	<?php
+	if($row['myCode'] > 0){
+		echo $row['FirstName'] ;
+	}else{
+		echo '';
+	}
+	?>
+	
+	</td>
+	
+    <td>
+	<?php
+	if($row['myCode'] > 0){
+		echo $array[0] ;
+	}else{
+		echo '';
+	}
+	?>
+	</td>
+	
+    <td>
+	<?php
+	if($row['usedate'] > 0){
+		echo $array[1] ;
+	}else{
+		echo '';
+	}
+	?>
+	</td>
+	 <td>
+	<?php
+	if($row['usedate'] > 0){
+		echo $array[2] ;
+	}else{
+		echo '';
+	}
+	?>
+	</td>
+  </tr>
+</table>
+<?php }
+?>
+
+
+
+	SELECT
+		  testx.seqno
+		  , testx.myCode
+		  , testx.usedate 
+		  , textd.FirstName
+		FROM
+		  myblog.testx 
+		  JOIN 
+		  myblog.textd
+		  ON testx.myCode = textd.myCode
+		GROUP BY myCode;
+		ORDER BY testx.seqno
+
+
 
 </xmp>
 
