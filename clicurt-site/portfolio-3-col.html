@@ -218,6 +218,14 @@ function changes(){
 
 
 
+SET @@group_concat_max_len = 5000;
+SET @sql = NULL;
+SELECT GROUP_CONCAT(DISTINCT CONCAT('MAX(IF(hw_id = ', hw_id, ', score, -1)) AS ', CONCAT('`hw', hw_id, '`'))) INTO @sql FROM mk;
+SET @sql = CONCAT('SELECT st.id, ', @sql, ' FROM st LEFT JOIN mk ON st.id = mk.st_id GROUP BY st.id');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 
 
 </xmp>
