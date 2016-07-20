@@ -22,6 +22,42 @@
         
         
         
+mysql> SELECT
+    ->   GROUP_CONCAT(DISTINCT
+    ->     CONCAT(
+    ->       'MAX(IF(`seqno` = ', `seqno`, ',usedate,NULL)) AS day', `seqno`)
+    ->   ) INTO @sql
+    -> FROM testx;
+Query OK, 1 row affected (0.12 sec)
+
+mysql> 
+mysql> SET @sql = CONCAT('SELECT myCode, ', @sql, ' 
+    '>                   FROM testx
+    '>                   GROUP BY myCode');
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> 
+mysql> PREPARE stmt FROM @sql;
+Query OK, 0 rows affected (0.00 sec)
+Statement prepared
+
+mysql> EXECUTE stmt;
++--------+------------+------------+------------+------------+------------+------------+
+| myCode | day1       | day2       | day3       | day4       | day5       | day6       |
++--------+------------+------------+------------+------------+------------+------------+
+|   1000 | 2016-07-01 | 2016-07-02 | 2016-07-09 | NULL       | NULL       | NULL       |
+|   2000 | NULL       | NULL       | NULL       | 2016-07-13 | 2016-07-06 | 2016-07-20 |
++--------+------------+------------+------------+------------+------------+------------+
+2 rows in set (0.00 sec)
+
+mysql> DEALLOCATE PREPARE stmt;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> 
+
+        
+        
+        
         
 <?php
 class Controller_Comments extends Controller_Template
