@@ -6,6 +6,23 @@
 <a href ="http://fuelphp.com/forums/discussion/6709">fuel link</a>
 
 <xmp>
+        
+   SET @@group_concat_max_len = 5000;
+        SET @sql = NULL;
+        SELECT GROUP_CONCAT(DISTINCT 
+        CONCAT('MAX(IF(seqno = ', seqno, ', usedate, '''')) AS ', 
+        CONCAT('`day', seqno, '`'))) INTO @sql FROM testx;
+        SET @sql = CONCAT('SELECT testx.myCode, ', @sql, ' FROM testx JOIN textd ON testx.myCode = textd.myCode GROUP BY myCode');
+        PREPARE stmt FROM @sql;
+        EXECUTE stmt;
+        DEALLOCATE PREPARE stmt;     
+        
+        
+        
+        
+        
+        
+        
 <?php
 class Controller_Comments extends Controller_Template
 {
