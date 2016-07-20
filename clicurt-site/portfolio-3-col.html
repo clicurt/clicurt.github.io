@@ -13,9 +13,9 @@ mysql  Ver 14.14 Distrib 5.7.12, for Linux (x86_64) using  EditLine wrapper
    SET @@group_concat_max_len = 5000;
         SET @sql = NULL;
         SELECT GROUP_CONCAT(DISTINCT 
-        CONCAT('MAX(IF(seqno = ', seqno, ', usedate, '''')) AS ', 
-        CONCAT('`day', seqno, '`'))) INTO @sql FROM testx;
-        SET @sql = CONCAT('SELECT testx.myCode, ', @sql, ' FROM testx JOIN textd ON testx.myCode = textd.myCode GROUP BY myCode');
+        CONCAT('MAX(IF(num = ', num, ', date, '''')) AS ', 
+        CONCAT('`day', num, '`'))) INTO @sql FROM testx;
+        SET @sql = CONCAT('SELECT testx.id, ', @sql, ' FROM testx JOIN textd ON testx.id = textd.id GROUP BY id');
         PREPARE stmt FROM @sql;
         EXECUTE stmt;
         DEALLOCATE PREPARE stmt;     
@@ -28,15 +28,15 @@ mysql  Ver 14.14 Distrib 5.7.12, for Linux (x86_64) using  EditLine wrapper
 mysql> SELECT
     ->   GROUP_CONCAT(DISTINCT
     ->     CONCAT(
-    ->       'MAX(IF(`seqno` = ', `seqno`, ',usedate,NULL)) AS day', `seqno`)
+    ->       'MAX(IF(`num` = ', `num`, ',date,NULL)) AS day', `num`)
     ->   ) INTO @sql
     -> FROM testx;
 Query OK, 1 row affected (0.12 sec)
 
 mysql> 
-mysql> SET @sql = CONCAT('SELECT myCode, ', @sql, ' 
+mysql> SET @sql = CONCAT('SELECT id, ', @sql, ' 
     '>                   FROM testx
-    '>                   GROUP BY myCode');
+    '>                   GROUP BY id');
 Query OK, 0 rows affected (0.00 sec)
 
 mysql> 
@@ -45,12 +45,12 @@ Query OK, 0 rows affected (0.00 sec)
 Statement prepared
 
 mysql> EXECUTE stmt;
-+--------+------------+------------+------------+------------+------------+------------+
-| myCode | day1       | day2       | day3       | day4       | day5       | day6       |
-+--------+------------+------------+------------+------------+------------+------------+
-|   1000 | 2016-07-01 | 2016-07-02 | 2016-07-09 | NULL       | NULL       | NULL       |
-|   2000 | NULL       | NULL       | NULL       | 2016-07-13 | 2016-07-06 | 2016-07-20 |
-+--------+------------+------------+------------+------------+------------+------------+
++------+------------+------------+------------+------------+------------+------------+
+| id   | day1       | day2       | day3       | day4       | day5       | day6       |
++------+------------+------------+------------+------------+------------+------------+
+| 1000 | 2016-07-01 | 2016-07-02 | 2016-07-09 | NULL       | NULL       | NULL       |
+| 2000 | NULL       | NULL       | NULL       | 2016-07-13 | 2016-07-06 | 2016-07-20 |
++------+------------+------------+------------+------------+------------+------------+
 2 rows in set (0.00 sec)
 
 mysql> DEALLOCATE PREPARE stmt;
