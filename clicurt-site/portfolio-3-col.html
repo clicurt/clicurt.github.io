@@ -368,6 +368,139 @@ print_r($array[2]);
 		ORDER BY testx.seqno
 
 
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+ <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+</head>
+<body>
+
+<table style="border:1px solid black;">
+<tr>
+<th>This is it</th>
+<td><input type="text" name="new"></td>
+<td><input type="text" name="new"></td>
+<td><input type="text" name="new"></td>
+<td><input type="text" name="new"></td>
+</tr>
+<tr>
+<th>This is not</th>
+<td><input type="text" name="new"></td>
+<td><input type="text" name="new"></td>
+<td><input type="text" name="new"></td>
+<td><input type="text" name="new"></td>
+</tr>
+<tr>
+<td colspan="6">
+<table id="t" style="margin-left:60px;">
+
+<button id="add">add</button>
+</table>
+<span id="sum"></span>
+</td>
+</tr>
+<tr>
+<th>This is they</th>
+<td><input type="text" maxlength="1" name="new"></td>
+<td><input type="text" maxlength="1" name="new"></td>
+<td><input type="text" maxlength="1" name="new"></td>
+<td><input type="text" maxlength="1" name="new"></td>
+</tr>
+</table>
+</body>
+</html>
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#add').click(function(){
+            addRow('t');
+			
+        });
+		
+	$('.initialAmount').change(function () {
+	  $(this).next(".multipliedAmount").focus();
+	  calculateSum();
+	});
+});
+	
+	
+	
+	$('input.initialAmount').keyup(function () {
+		$(".multipliedAmount").focus();
+		//calculateSum();
+	});
+	/*
+	$(".inputs").keyup(function () {
+		if (this.value.length == this.maxLength) {
+		  $(this).next('.inputs').focus();
+		}
+	});
+	*/
+	
+	
+	
+    function keyup() {
+		var a = $(this).closest('tr').find('.initialAmount').val();
+		var b = $(this).val();
+		$(this).closest('tr').find('.productAmount').val(a * b);
+		calculateSum();
+    }
+    function calculateSum() {
+        var sum = 0;
+        //iterate through each textboxes and add the values  
+        $(".productAmount").each(function () {
+            //add only if the value is number  
+            if (!isNaN(this.value) && this.value.length != 0) {
+                sum += parseFloat(this.value);
+            }
+        });
+        //.toFixed() method will roundoff the final sum to 2 decimal places  
+        $("#sum").html(sum.toFixed(2));
+    }
+	
+    function addRow(tableID) {
+        //      alert(text+id);  
+        var table = document.getElementById(tableID);
+        var rowCount = table.rows.length;
+        var row = table.insertRow(rowCount);
+        var cell1 = row.insertCell(0); //chekbox  
+        var element1 = document.createElement("input");
+        element1.type = "checkbox";
+        cell1.appendChild(element1);
+        var cell2 = row.insertCell(1); //item  
+        var element2 = document.createElement("input");
+        element2.type = "text";
+        //  element2.setAttribute("name","txt");  
+        element2.setAttribute("value", "test");
+		//element2.setAttribute('maxlength','1');
+        cell2.appendChild(element2);
+        var cell3 = row.insertCell(2); //price  
+        var element3 = document.createElement("input");
+        element3.type = "text";
+        element3.setAttribute("class", "initialAmount");
+		//element3.setAttribute('maxlength','1');
+        cell3.appendChild(element3);
+		//$(element3).keyup(keyup);
+        var cell4 = row.insertCell(3); //qty  
+        var element4 = document.createElement("input");
+        element4.type = "text";
+        element4.setAttribute("class", "multipliedAmount");
+		//element4.setAttribute('maxlength','1');
+        cell4.appendChild(element4);
+        $(element4).keyup(keyup);
+        var cell5 = row.insertCell(4); //tot  
+        var element5 = document.createElement("input");
+        element5.type = "text";
+        element5.setAttribute("class", "productAmount");
+		//element5.setAttribute('maxlength','1');
+        cell5.appendChild(element5);
+    }
+</script>
+
+
 
 </xmp>
 
