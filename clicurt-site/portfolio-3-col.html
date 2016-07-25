@@ -501,6 +501,47 @@ print_r($array[2]);
 </script>
 
 
+    var $validate = array(
+    'name' => array(
+        'rule' => 'notEmpty',
+        'message' => 'Please type name'
+    ),
+    'mobile_phone' => array(
+        'check_phone' => array(
+            'rule' => array('hasPhone'),
+            'required' => false,
+            'allowEmpty' => true,
+            'message' => 'At least one phone number is required.'
+        )
+    ),
+    'work_phone' => array(
+        'check_phone' => array(
+            'rule' => array('hasPhone'),
+            'required' => false,
+            'allowEmpty' => true,
+            'message' => 'At least one phone number is required.'
+        )
+    ),
+    'home_phone' => array(
+        'check_phone' => array(
+            'rule' => array('hasPhone'),
+            'required' => false,
+            'allowEmpty' => true,
+            'message' => 'At least one phone number is required.'
+        )
+    )
+); 
+ 
+ 
+function hasPhone($field){
+    if(!empty($this->data[$this->name]['mobile_phone']) || !empty($this->data[$this->name]['work_phone']) || !empty($this->data[$this->name]['home_phone'])){
+        return true;
+    } else {
+        return false;
+    }
+}
+
+
 
 </xmp>
 
