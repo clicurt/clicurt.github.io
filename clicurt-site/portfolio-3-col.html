@@ -542,6 +542,55 @@ function hasPhone($field){
 }
 
 
+<?php 
+$array = array (0 => 
+  array (
+    'id' => '20110209172713',
+    'Date' => '2011-02-09',
+    'Weight' => '200',
+  ),
+  1 => 
+  array (
+    'id' => '20110209172747',
+    'Date' => '2011-02-09',
+    'Weight' => '180',
+  ),
+  2 => 
+  array (
+    'id' => '20110209172827',
+    'Date' => '2011-02-09',
+    'Weight' => '175',
+  ),
+  3 => 
+  array (
+    'id' => '20110211204433',
+    'Date' => '2011-02-11',
+    'Weight' => '195',
+  ),
+);
+
+foreach($array as $key=>$arr){
+	
+print "<pre>";
+print_r($arr);
+print "</pre>";
+}
+
+$max = intval($array[0]['Weight']);
+foreach($array as $key=>$arr){
+	$weight = intval($arr['Weight']);
+	if($weight > $max){
+		$max = $weight;
+	}
+
+}
+$max++;
+echo "Maximum: $max";
+
+
+
+?> 
+
 
 </xmp>
 
