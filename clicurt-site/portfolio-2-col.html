@@ -8,6 +8,42 @@
 
 <body>
 <div><xmp>
+*******************************************************************************
+<div>
+  Select a text file: 
+  <input type="file" id="fileInput">
+</div>
+<pre id="fileDisplayArea"></pre>
+
+*******************************************************************************
+var fileInput = $('#fileInput');
+	var fileDisplayArea = $('#fileDisplayArea');
+	
+	fileInput.change(function(e){
+		var file = fileInput[0].files[0];
+		var allowedFiles = [".csv"];
+		var regex = new RegExp("([a-zA-Z0-9\s_\\.\-:])+(" + allowedFiles.join('|') + ")$");
+		if (regex.test(fileInput.val().toLowerCase())) {		
+			var reader = new FileReader();
+			reader.readAsText(file);
+			reader.onload = function(e){
+				var csvData = e.target.result;
+				data = $.csv.toArrays(csvData);
+				if (data && data.length > 0) {	
+					fileDisplayArea.html(data);
+				}else{
+					fileDisplayArea.html("File Empty!");
+				}
+			}
+		}else{
+			fileDisplayArea.html("File Not Supported!");
+		}
+	});
+	
+*******************************************************************************
+
+
+
 <input type="file" name="filename" id="filename">
     <div id="csvimporthint"></div>
 
