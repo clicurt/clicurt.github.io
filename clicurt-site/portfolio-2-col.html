@@ -8,6 +8,40 @@
 
 <body>
 <div><xmp>
+public Result receiveDataDB(){
+    	JsonNode json = request().body().asJson();
+    	String name = json.get("name").textValue();
+    	String comment = json.get("comment").textValue();
+    	
+    	return ok("success:" + name + comment); 
+    }
+
+
+function receiveDataDB(){
+			datas = {'name': "great",	'comment': "meat"};
+	        $.ajax({
+	            type :  "POST",
+	            dataType: 'json',
+	            contentType: "application/json; charset=utf-8",
+	            data: JSON.stringify(datas),
+	            url  :  "@routes.HomeController.receiveDataDB()",
+                success: function(data){
+                	console.log(data);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.status);
+                    console.log(xhr.responseText);
+                    console.log(thrownError);
+                }
+	        });
+    	} 
+==============================================================================
+
+
+
+
+
+
 *******************************************************************************
 <div>
   Select a text file: 
