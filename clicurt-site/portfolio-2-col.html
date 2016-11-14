@@ -10,6 +10,71 @@
 <div><xmp>
 
 
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package javaapplication1;
+
+//import gvjava.org.json.JSONArray;
+import gvjava.org.json.JSONException;
+import gvjava.org.json.JSONObject;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import org.json.simple.JSONArray;
+
+/**
+ *
+ * @author curtis
+ */
+public class JavaApplication1 {
+
+    /**
+     * @param args the command line arguments
+     * @throws gvjava.org.json.JSONException
+     */
+    public static void main(String[] args) throws JSONException {
+        // TODO code application logic here
+        List<JSONObject> list = new ArrayList<>();
+        LinkedHashSet<JSONObject> lhasset = new LinkedHashSet(); 
+        JSONArray arr = new JSONArray();
+        HashMap<String, JSONObject> map = new HashMap<>();
+        JSONObject first = new JSONObject();
+        first.put("id", "floorId");
+        first.put("parent", "#");
+        first.put("text", "Step");
+        first.put("state", "{opened:true}");
+        map.put("first" , first);
+        lhasset.add(map.get("first"));
+        for(int i=1; i< 97; i++){
+            JSONObject json = new JSONObject();
+            if( i == 1 ){
+                json.put("id", i);
+                json.put("parent", "floorId");
+                json.put("text", "All Steps");
+                json.put("state", "{opened:false}");
+                map.put("json" + i, json);
+            }else{
+                json.put("id", i);
+                json.put("parent", "floorId");
+                json.put("text", i);
+                json.put("state", "{opened:false}");
+                map.put("json" + i, json);
+            }
+            lhasset.add(map.get("json" + i));
+        }
+        System.out.println("the json string is: " + lhasset.toString());
+    }
+}
+
+
+
+
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 @*
  * This template takes a single argument, a String containing a
