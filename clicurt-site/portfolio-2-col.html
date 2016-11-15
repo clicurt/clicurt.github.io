@@ -10,6 +10,103 @@
 <div><xmp>
 
 
+ public Result upload() {
+    	
+        MultipartFormData<File> body = request().body().asMultipartFormData();
+        FilePart<File> picture = body.getFile("picture");
+        if (picture != null) {
+            String fileName = picture.getFilename();
+            String[] baseName = fileName.split("\\.(?=[^\\.]+$)");
+            String contentType = picture.getContentType();
+            //Map<String, String[]> values = request().body().asFormUrlEncoded();
+            //JsonNode json = request().body().asJson().get("id");
+          //  String dynamicFolder = json.textValue();
+           // String dynamicFolder = "tee";
+           // Logger.logMsg(dynamicFolder);
+            File inputStream = picture.getFile();
+         //   String enter = inputStream.getAbsolutePath();
+           // String dynamicFolder = receiveData().toString();
+            String fullPath = "C:/tmp/";
+            
+            if (contentType.equals( "image/png")){
+            	try{           
+            		File newdir = new File(fullPath+fileName);
+            		String encodedString = URLEncoder.encode(baseName[0], "UTF-8");
+            		String repEncoded = encodedString.replace("+", "_");
+            		File modDir = new File(fullPath + repEncoded);
+                	newdir.mkdir();
+                	Files.copy(inputStream.toPath(), newdir.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                	Files.copy(inputStream.toPath(), modDir.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            	}catch (Exception e){
+                	throw new IllegalStateException(e);
+                }
+            }
+                return ok("File uploaded");
+        } else {
+            flash("error", "Missing file");
+            return badRequest();
+        }
+    }
+
+
+*****************************************************************
+package javaapplication1;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+/**
+ *
+ * @author curtis
+ */
+public class UrlEx {
+    /**
+     * The main method.
+     *
+     * @param args the arguments
+     */
+    public static void main(String[] args) {
+        try {
+            String string = "The string ?foo-bar";
+            String encodedString = URLEncoder.encode(string, "UTF-8");
+            String modi = encodedString.replace("+","_");
+
+            System.out.println("Encoded String: " + modi);
+
+        } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+        }
+    }
+}
+
+
+public class UrlEx {
+    /**
+     * The main method.
+     *
+     * @param args the arguments
+     */
+    public static void main(String[] args) {
+        try {
+            File file = new File("???.ppt");
+            String fileName = file.getName();
+            String string = "The string ?foo-bar";
+            //string.replaceAll(" ", "_");
+            String encodedString = URLEncoder.encode(fileName, "UTF-8");
+            String modi = encodedString.replace("+","_");
+            String[] baseName = fileName.split("\\.(?=[^\\.]+$)");    
+            System.out.println("Encoded String: " + modi);
+            System.out.println("File Name: " + fileName);
+            System.out.println("Base Name: " + baseName[0]);
+        } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+        }
+    }
+}
+
+
+
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
