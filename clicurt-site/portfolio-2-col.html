@@ -8,6 +8,251 @@
 
 <body>
 <div><xmp>
+
+
+
+
+@*
+ * This template takes a single argument, a String containing a
+ * message to display.
+ *@
+
+@(name: String, what: String, age: Int)
+@import helper._
+@*
+ * Call the `main` template with two arguments. The first
+ * argument is a `String` with the title of the page, the second
+ * argument is an `Html` object containing the body of the page.
+ *@
+
+
+		@main("Welcome to Play") {
+
+		    @*
+		     * Get an `Html` object by calling the built-in Play welcome
+		     * template and passing a `String` message.
+		     *@
+             <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+         	<script type="text/javascript">
+
+
+     		//$('#submit').click(function(){
+     		function sendData(){
+                 var d = { id: "32" };
+     	        $.ajax({
+     	            type :  "POST",
+     	            dataType: 'json',
+     	            processData: false,
+     	            contentType: "application/json; charset=utf-8",
+     	            data: JSON.stringify(d),
+     	            url  :  "@routes.HomeController.upload()",
+     	                success: function(data){
+     	                    console.log(data);
+     	                }
+     	        });
+         	}
+
+             function childOpen() {
+
+             }
+     /*
+         	function createTest_Button() {
+     	        var buttonDef = {
+     	        	label : "my button",
+     	        	eventClickFunc: function(e, data) {
+     	   				console.log('I am clicked');
+     	        	}
+     	        },
+     //	        return new Button('my_button', buttonDef);
+             }
+
+     		function receiveData(){
+     	        $.ajax({
+     	            type :  "POST",
+     	            dataType: 'json',
+     	            processData: false,
+
+     	            contentType: "application/json; charset=utf-8",
+     	            data: JSON.stringify(d),
+     	            url  :  "@routes.HomeController.receiveData()",
+     	                success: function(data){
+     	                    console.log(data);
+     	                }
+     	        });
+         	}
+     */
+     		function receiveDataDB(){
+     			datas = {'name': "great",	'comment': "times"};
+     	        $.ajax({
+     	            type :  "POST",
+     	            dataType: 'json',
+     	            contentType: "application/json; charset=utf-8",
+     	            data: JSON.stringify(datas),
+     	            url  :  "@routes.HomeController.receiveDataDB()",
+                     success: function(data){
+                     	console.log(data);
+                     },
+                     error: function (xhr, ajaxOptions, thrownError) {
+                         console.log(xhr.responseText);
+                     }
+     	        });
+         	}
+     		//});
+             /**/
+     		var count = 1;
+     		function prevButton(){
+     		    var prevSrc = $("#slide").attr("src").replace("1", count);
+                 while (count < 4){
+                     count++;
+                 }
+                 if (count == 4){
+                     count = 1;
+                 }
+                 $("#slide").attr("src", prevSrc);
+             }
+
+             function nextButton(){
+                 var newSrc = $("#slide").attr("src").replace("1", count);
+                 while (count !== 0){
+                     count = count - 1;
+                 }
+                 if (count == 0){
+                     count = 3;
+                 }
+                 $("#slide").attr("src", newSrc);
+             }
+
+             function progressBarSim(al) {
+                 var percent = (event.loaded / event.total) * 100;
+                 console.log("percent :" , percent);
+                 var bar = $('#progressBar');
+                 var status = $('#status');
+                 status.html(al + "%");
+                 bar.val(al);
+                 al++;
+                 var sim = setTimeout("progressBarSim(" + al + ")", 300);
+                 if(al === 100) {
+                     status.html("100%");
+                     bar.val(100);
+                     clearTimeout(sim);
+                     $('#finalMsg').html("Completed!");
+                 }
+             }
+
+             function progressHandler(event) {
+                 $('#loaded_n_total').html('uploaded ' + event.loaded + ' bytes of ' + event.total)
+                 var percent = (event.loaded / event.total) * 100;
+                 console.log("percent :" , percent);
+                 $('#progressBar').val(Math.round(percent));
+                 $('#status').html(Math.round(percent) + '% uploaded...please wait')
+             }
+
+             function completeHandler(event) {
+                 $('#status').html(event.target.responseText);
+                 $('#progressBar').val(0);
+             }
+
+             function errorHandler(event) {
+                 $('#status').html("upload Failed");
+             }
+
+             function abortHandler(event) {
+                 $('#status').html("upload Aborted");
+             }
+
+             var amountLoaded = 0;
+
+            //  $(function(){
+            function upload() {
+                //  $('#submission').on('click', function(){
+
+                    //  e.preventDefault();
+                     // var d = { id: "32" };
+                     var loading;
+         	        $.ajax({
+                        xhr : function() {
+                            var xhr = new window.XMLHttpRequest();
+                            xhr.upload.addEventListener('progress', function(e) {
+                                if(e.lengthComputable) {
+                                    console.log('Bytes Loaded: ' + e.loaded);
+                                    console.log('Total size: ' + e.total);
+                                    console.log('Percentage Uploaded: ' + e.loaded / e.total);
+                                }
+                            });
+                            return xhr;
+                        },
+         	            type :  "POST",
+         	            dataType: 'json',
+         	            processData: false,
+         	            contentType: false,
+         	            // data: JSON.stringify(d),
+         	            url  :  "@routes.HomeController.upload()",
+                         beforeSend: function(jqXHR, options) {
+                             progressBarSim(xhr);
+                             console.log("percent :" , jqXHR);
+                             alert('checking');
+                            //  progressHandler();
+                         },
+     	                success: function(data){
+                            console.log("file uploaded " + data);
+     	                }
+         	        });
+    //                var file = $("#file").files[0];
+	// // alert(file.name+" | "+file.size+" | "+file.type);
+    //             	var formdata = new FormData();
+    //             	formdata.append("file", file);
+                	// var ajax = new XMLHttpRequest();
+                	// ajax.upload.addEventListener("progress", progressHandler, false);
+                	// ajax.addEventListener("load", completeHandler, false);
+                	// ajax.addEventListener("error", errorHandler, false);
+                	// ajax.addEventListener("abort", abortHandler, false);
+                	// ajax.open("POST", "@routes.HomeController.upload()");
+                	// ajax.send(formdata);
+}
+                //  });
+            //  });
+
+     		</script>
+
+		    <h1>Hello</h1>
+		    <div style="margin-bottom:20px;">
+		    Hello <b>@name</b> you are learning <b>@what</b> at <b>@age</b> years
+		    </div>
+		    @form(action = routes.HomeController.upload, 'enctype -> "multipart/form-data") {
+
+		    <input id="file" type="file" name="file" >
+			    <p>
+			        <input type="submit" id="submission" name="submit" value="Press to upload file" onclick="upload()"/>
+			    </p>
+			}
+			<input id="submit" onclick="window.open('count', 'child', width='400', height='200');" type="button" name="sendData" value ="Open child"/>
+			<br>
+			<input id="submit" onclick="receiveDataDB();" type="button" name="receive" value ="receive data db"/>
+            <div>
+                <progress id="progressBar" value="0" max="100" style="width:300px;"></progress>
+                <span id="status"></span>
+                <h1 id="finalMsg"></h1>
+                <p id ="loaded_n_total"></p>
+            </div>
+		}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+***********************************************************************************************************
 document.body.offsetWidth and document.body.offsetHeight
 
 *****************************************************************
