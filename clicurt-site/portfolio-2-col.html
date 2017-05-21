@@ -7,6 +7,78 @@
 </head>
 
 <body>
+<pre>
+
+    $('button#copyTXT').click(function(){
+        var txt = $('#txt').val();
+        if(!txt || txt == '') {
+            return;
+        }
+       copyTextToClipboard(JSONToCSVConvertor(data));
+        $('textarea').val('').focus();
+    });
+
+    function JSONToCSVConvertor(JSONData) {
+        //If JSONData is not an object then JSON.parse will parse the JSON string in an Object
+        var arrData = typeof JSONData != 'object' ? JSON.parse(JSONData) : JSONData;
+        var CSV = '';
+        //Set Report title in first row or line
+        //This condition will generate the Label/Header
+            var row = "";
+            //This loop will extract the label from 1st index of on array
+            for (var index in arrData[0]) {
+                //Now convert each value to string and comma-seprated
+                row += index + '\t';
+            }
+            row = row.slice(0, -1);
+            //append Label row with line break
+            CSV += row + '\r\n';
+        //1st loop is to extract each row
+        for (var i = 0; i < arrData.length; i++) {
+            var row = "";
+            //2nd loop will extract each column and convert it in string comma-seprated
+            for (var index in arrData[i]) {
+                row += '"' + arrData[i][index] + '"\t';
+            }
+            row.slice(0, row.length - 1);
+            //add a line break after each row
+            CSV += row + '\r\n';
+        }
+        if (CSV == '') {
+            alert("Invalid data");
+            return;
+        }
+        // copyTextToClipboard(CSV);
+        //Generate a file name
+        return CSV;
+    }
+
+    function copyTextToClipboard(text) {
+          var textArea = document.createElement("textarea");
+          textArea.value = text;
+          document.body.appendChild(textArea);
+          textArea.select();
+          try {
+            var successful = document.execCommand('copy');
+            var msg = successful ? 'successful' : 'unsuccessful';
+            console.log('Copying text command was ' + msg);
+          } catch (err) {
+            console.log('Oops, unable to copy');
+          }
+          document.body.removeChild(textArea);
+    }
+
+
+    <div class="wrap">
+        <input type="text" placeholder="Write some text you want to copy" />
+        <button id="copyTXT">Copy my text</button>
+        <br>
+        <br>
+
+        <textarea style="display:none;" ></textarea>
+    </div>
+</pre>
+
 <div><xmp>
 
 
@@ -282,31 +354,31 @@ browser : {
 		IE : !!(window.attachEvent && navigator.userAgent.indexOf('Opera') === -1),
 		Opera : navigator.userAgent.indexOf('Opera') > -1,
 		WebKit : navigator.userAgent.indexOf('AppleWebKit/') > -1,
-		Gecko : navigator.userAgent.indexOf('Gecko') > -1 
+		Gecko : navigator.userAgent.indexOf('Gecko') > -1
 				&& navigator.userAgent.indexOf('KHTML') === -1,
-		
+
 		getViewHgt : function(){
-			return browser.IE ? 
+			return browser.IE ?
 					// IE Cases
 					// Test for IE 5-7 Quirks and IE 4
-					(!(document.documentElement.clientHeight) 
+					(!(document.documentElement.clientHeight)
 					|| (document.documentElement.clientHeight === 0)) ?
 					// IE 5-7 Quirks and IE 4 case
-					document.body.clientHeight : 
+					document.body.clientHeight :
 					//IE 6+ Strict Case
 					document.documentElement.clientHeight:
 					// Gecko and Other DOM compliant case
-					window.innerHeight; 
+					window.innerHeight;
 		},
-		
+
 		getViewWdth : function(){
-			return browser.IE ? 
+			return browser.IE ?
 					// IE Cases
 					// Test for IE 5-7 Quirks and IE 4
-					(!(document.documentElement.clientWidth) 
+					(!(document.documentElement.clientWidth)
 					|| (document.documentElement.clientWidth === 0)) ?
 					// IE 5-7 Quirks and IE 4 case
-					document.body.clientWidth : 
+					document.body.clientWidth :
 					//IE 6+ Strict Case
 					document.documentElement.clientWidth:
 					// Gecko and Other DOM compliant case
@@ -315,10 +387,10 @@ browser : {
 
 *******************************************************************************
 
-function windowResize() { 
+function windowResize() {
  var width= document.getElementById("resizeDiv").offsetWidth ;
  var height= document.getElementById("resizeDiv").offsetHeight ;
- alert(height); window.resizeTo(width+20,height+100); 
+ alert(height); window.resizeTo(width+20,height+100);
 }
 
 var theDialog = $(".mydialog").dialog({
@@ -331,7 +403,7 @@ var theDialog = $(".mydialog").dialog({
 
 
  public Result upload() {
-    	
+
         MultipartFormData<File> body = request().body().asMultipartFormData();
         FilePart<File> picture = body.getFile("picture");
         if (picture != null) {
@@ -347,9 +419,9 @@ var theDialog = $(".mydialog").dialog({
          //   String enter = inputStream.getAbsolutePath();
            // String dynamicFolder = receiveData().toString();
             String fullPath = "C:/tmp/";
-            
+
             if (contentType.equals( "image/png")){
-            	try{           
+            	try{
             		File newdir = new File(fullPath+fileName);
             		String encodedString = URLEncoder.encode(baseName[0], "UTF-8");
             		String repEncoded = encodedString.replace("+", "_");
@@ -412,7 +484,7 @@ public class UrlEx {
             //string.replaceAll(" ", "_");
             String encodedString = URLEncoder.encode(fileName, "UTF-8");
             String modi = encodedString.replace("+","_");
-            String[] baseName = fileName.split("\\.(?=[^\\.]+$)");    
+            String[] baseName = fileName.split("\\.(?=[^\\.]+$)");
             System.out.println("Encoded String: " + modi);
             System.out.println("File Name: " + fileName);
             System.out.println("Base Name: " + baseName[0]);
@@ -456,7 +528,7 @@ public class JavaApplication1 {
     public static void main(String[] args) throws JSONException {
         // TODO code application logic here
         List<JSONObject> list = new ArrayList<>();
-        LinkedHashSet<JSONObject> lhasset = new LinkedHashSet(); 
+        LinkedHashSet<JSONObject> lhasset = new LinkedHashSet();
         JSONArray arr = new JSONArray();
         HashMap<String, JSONObject> map = new HashMap<>();
         JSONObject first = new JSONObject();
@@ -497,7 +569,7 @@ public class JavaApplication1 {
  * This template takes a single argument, a String containing a
  * message to display.
  *@
- 
+
 @(name: String, what: String, age: Int)
 @import helper._
 @*
@@ -527,14 +599,14 @@ public class JavaApplication1 {
 	                    console.log(data);
 	                }
 	        });
-    	}  
-		
+    	}
+
 		function receiveData(){
 	        $.ajax({
 	            type :  "POST",
 	            dataType: 'json',
 	            processData: false,
-	            
+
 	            contentType: false,//"application/json; charset=utf-8",
 	            data: JSON.stringify(d),
 	            url  :  "@routes.HomeController.receiveData()",
@@ -542,8 +614,8 @@ public class JavaApplication1 {
 	                    console.log(data);
 	                }
 	        });
-    	} 
-		
+    	}
+
 		function receiveDataDB(){
 			datas = {'name': "great",	'comment': "meat"};
 	        $.ajax({
@@ -561,7 +633,7 @@ public class JavaApplication1 {
                     console.log(thrownError);
                 }
 	        });
-    	} 
+    	}
 		//});
 		var count = 1;
 		function prevButton(){
@@ -574,9 +646,9 @@ public class JavaApplication1 {
             }
             $("#slide").attr("src", prevSrc);
         }
-        
+
         function nextButton(){
-            var newSrc = $("#slide").attr("src").replace("1", count);            
+            var newSrc = $("#slide").attr("src").replace("1", count);
             while (count !== 0){
                 count = count - 1;
             }
@@ -584,13 +656,13 @@ public class JavaApplication1 {
                 count = 3;
             }
             $("#slide").attr("src", newSrc);
-        }	
-		    
+        }
+
 		</script>
     </head>
     <body>
 		@main("Welcome to Play") {
-		
+
 		    @*
 		     * Get an `Html` object by calling the built-in Play welcome
 		     * template and passing a `String` message.
@@ -600,11 +672,11 @@ public class JavaApplication1 {
 		    Hello <b>@name</b> you are learning <b>@what</b> at <b>@age</b> years
 		    </div>
 		    @form(action = routes.HomeController.upload, 'enctype -> "multipart/form-data") {
-		    
-		    <input type="file" name="picture" >    
+
+		    <input type="file" name="picture" >
 			    <p>
 			        <input type="submit" id="submit" onclick="sendData();"/>
-			    </p>    
+			    </p>
 			}
 			<input id="submit" onclick="receiveData();" type="button" name="sendData" value ="send"/>
 			<br>
@@ -627,8 +699,8 @@ public Result receiveDataDB(){
     	JsonNode json = request().body().asJson();
     	String name = json.get("name").textValue();
     	String comment = json.get("comment").textValue();
-    	
-    	return ok("success:" + name + comment); 
+
+    	return ok("success:" + name + comment);
     }
 
 
@@ -649,7 +721,7 @@ function receiveDataDB(){
                     console.log(thrownError);
                 }
 	        });
-    	} 
+    	}
 ==============================================================================
 
 
@@ -659,7 +731,7 @@ function receiveDataDB(){
 
 *******************************************************************************
 <div>
-  Select a text file: 
+  Select a text file:
   <input type="file" id="fileInput">
 </div>
 <pre id="fileDisplayArea"></pre>
@@ -667,18 +739,18 @@ function receiveDataDB(){
 *******************************************************************************
 var fileInput = $('#fileInput');
 	var fileDisplayArea = $('#fileDisplayArea');
-	
+
 	fileInput.change(function(e){
 		var file = fileInput[0].files[0];
 		var allowedFiles = [".csv"];
 		var regex = new RegExp("([a-zA-Z0-9\s_\\.\-:])+(" + allowedFiles.join('|') + ")$");
-		if (regex.test(fileInput.val().toLowerCase())) {		
+		if (regex.test(fileInput.val().toLowerCase())) {
 			var reader = new FileReader();
 			reader.readAsText(file);
 			reader.onload = function(e){
 				var csvData = e.target.result;
 				data = $.csv.toArrays(csvData);
-				if (data && data.length > 0) {	
+				if (data && data.length > 0) {
 					fileDisplayArea.html(data);
 				}else{
 					fileDisplayArea.html("File Empty!");
@@ -688,7 +760,7 @@ var fileInput = $('#fileInput');
 			fileDisplayArea.html("File Not Supported!");
 		}
 	});
-	
+
 *******************************************************************************
 
 
@@ -704,7 +776,7 @@ if($.inArray(ext, ["csv"]) == -1) {
 alert('Upload CSV');
 return false;
 }
-    
+
 if (e.target.files != undefined) {
 var reader = new FileReader();
 reader.onload = function(e) {
@@ -737,12 +809,12 @@ class Controller_Posts extends Controller_Template
 	public function action_index()
 	{
 		$posts = Model_Post::find('all');
-		
+
 		$data = array('posts' => $posts);
       $this->template->title = 'Blog Posts';
       $this->template->content = View::forge('posts/index', $data, false);
 	}
-	
+
 	public function action_add()
 	{
 		 if(Input::post('send')){
@@ -752,18 +824,18 @@ class Controller_Posts extends Controller_Template
 		 	$post->body = Input::post('body');
 		 	$post->tags = Input::post('tags');
 		 	$post->create_date = date('Y-m-d H:i:s');
-		 	
+
 		 	$post->save();
-		 	
+
 		 	Session::set_flash('success', 'Post Added');
-		 	
+
 		 	Response::redirect('/');
 		 }
 		 $data = array();
        $this->template->title = 'Add Posts';
        $this->template->content = View::forge('posts/add', $data);
 	}
-	
+
 	public function action_view($id)
 	{
 		 $post = Model_Post::find('first', array(
@@ -771,15 +843,15 @@ class Controller_Posts extends Controller_Template
 		 		'id' => $id
 		 	)
 		 ));
-		 
+
 		 $data = array('post' => $post);
        $this->template->title = $post->title;
        $this->template->content = View::forge('posts/view', $data, false);
 	}
-	
+
 	public function action_edit($id)
 	{
-		 
+
 		  if(Input::post('send')){
 		 	$post = Model_Post::find(Input::post('post_id'));
 		 	$post->title = Input::post('title');
@@ -787,35 +859,35 @@ class Controller_Posts extends Controller_Template
 		 	$post->body = Input::post('body');
 		 	$post->tags = Input::post('tags');
 		 	$post->create_date = date('Y-m-d H:i:s');
-		 	
+
 		 	$post->save();
-		 	
+
 		 	Session::set_flash('success', 'Post Updated');
-		 	
+
 		 	Response::redirect('/');
 		 }
-		 
+
 		 $post = Model_Post::find('first', array(
 		 	'where' => array(
 		 		'id' => $id
 		 	)
 		 ));
-		 
+
 		 $data = array('post' => $post);
        $this->template->title = 'Edit Post';
        $this->template->content = View::forge('posts/edit', $data, false);
 	}
-	
+
 		public function action_delete($id)
 	   {
 		 $post = Model_Post::find($id);
 		 $post->delete();
-		 
+
 		 Session::set_flash('success', 'Post Deleted');
-		 	
+
 		 Response::redirect('/');
 	   }
-	   
+
 	   public function action_calendar()
 	   {
 		 //$post = Model_Post::find('all');
@@ -824,7 +896,7 @@ class Controller_Posts extends Controller_Template
       // $this->template->title = 'Calendar';
       // $this->template->content = View::forge('posts/calendar');
 	}
-	
+
 }
 </xmp></div>
 <div>
@@ -848,13 +920,13 @@ class Model_Post extends orm\Model{
 <div class="blog-post">
    <h2 class="blog-post-title"><?php echo $post->title; ?></h2>
    <p class="blog-post-meta"><?php echo $post->create_date; ?></p>
-   
+
 
 
    <?php echo Str::truncate($post->body, 200); ?><br/>
    <a class="btn btn-default" href="/posts/view/<?php echo $post->id; ?>">View more</a>
 </div><!-- /.blog-post -->
-<?php endforeach; ?>     
+<?php endforeach; ?>
 
 
 edit.php
@@ -889,7 +961,7 @@ edit.php
 
 <div class="actions">
 <?php echo Form::submit('send'); ?>
-	
+
 </div>
 
 <?php echo Form::close(); ?>
@@ -927,7 +999,7 @@ edit.php
 
 <div class="actions">
 <?php echo Form::submit('send'); ?>
-	
+
 </div>
 
 <?php echo Form::close(); ?>
@@ -941,7 +1013,7 @@ edit.php
 <?php echo Form::open('comments/index/<?php echo $comments->id; ?>'); ?>
 <?php foreach($comments as $comment) : ?>
 <?php $array[] = $comment->title; ?>
-<?php endforeach; ?> 
+<?php endforeach; ?>
 <div class="form-group">
 	<?php echo Form::label('Category', 'category'); ?>
 	<?php echo Form::select('category', $comment->title, array(
@@ -956,21 +1028,21 @@ edit.php
 
 <div class="actions">
 
-	
+
 </div>
 
 <?php echo Form::close(); ?>
 
 
 
-   
+
 <?php
 class Controller_Comments extends Controller_Template
 {
 	public function action_index()
 	{
-		$comments = Model_Post::find('all'); 
-		
+		$comments = Model_Post::find('all');
+
 		$data = array('comments' => $comments,
 		);
       $this->template->title = 'Blog Comments';
@@ -986,7 +1058,7 @@ class Controller_Comments extends Controller_Template
 <?php echo Form::open('comments/index/<?php echo $comments->id; ?>'); ?>
 <?php foreach($comments as $comment) : ?>
 <?php $array[] = $comment->title; ?>
-<?php endforeach; ?> 
+<?php endforeach; ?>
 <div class="form-group">
 	<?php echo Form::label('Category', 'category'); ?>
 	<?php echo Form::select('category', $comment->title, array(
@@ -1001,7 +1073,7 @@ class Controller_Comments extends Controller_Template
 
 <div class="actions">
 
-	
+
 </div>
 
 <?php echo Form::close(); ?>
