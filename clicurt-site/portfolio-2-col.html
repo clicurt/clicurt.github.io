@@ -8,7 +8,42 @@
 
 <body>
 <pre>
+https://jsfiddle.net/56hs2nmn/
+https://stackoverflow.com/questions/32418988/not-able-to-sort-entries-in-textarea-basis-on-key-and-value-both-using-javascrip
 
+    document.getElementById('sortbykey').onclick = sortByKey;
+    document.getElementById('sortbyvalue').onclick = sortByValue;
+*****************************************************************************
+    <div>
+        <button type="button" id='sortbykey' onclick='sortByKey()'>Sort by name</button>
+        <button type="button" id='sortbyvalue' onclick='sortByValue()'>Sort by value</button>
+    </div>
+*****************************************************************************
+    function sortByKey() {
+        var textarea = document.getElementById("ans");
+    	textarea.value = textarea.value.split("\n").sort(function(a, b){
+            if(a != "" && b != ""){
+                return a.split(':')[0].localeCompare(b.split(':')[0])
+            } else {
+                return 0
+            }
+        }).join("\n");
+    }
+
+
+    function sortByValue() {
+        var textarea = document.getElementById("ans");
+    	textarea.value = textarea.value.split("\n").sort(function(a, b){
+            if(a != "" && b != ""){
+                return a.split(':')[1].localeCompare(b.split(':')[1])
+            } else {
+                return 0
+            }
+        }).join("\n");
+    }
+
+
+*****************************************************************************
     $('button#copyTXT').click(function(){
         var txt = $('#txt').val();
         if(!txt || txt == '') {
