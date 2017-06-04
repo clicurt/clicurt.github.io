@@ -8,6 +8,36 @@
 
 <body>
 <pre>
+
+
+
+
+	function arrayManupulation() {
+            var temp = [];
+            var a = ['foo', 'bar', 'baz'];
+            for(var i in a) {
+                if(i > 1){
+                    a.splice(i);
+                }
+            }
+            var cString = JSONToCSVConvertor(array);
+            arrCString = [];
+            arrCString = cString.split('\n');
+            var found = false;
+            $.each(arrCString, function(i, val) {
+                if (val.indexOf("Honda") >= 0 && i > 1) {
+                    arrCString.splice(i, 2);
+                    found = true;
+                    return false;
+                }
+            });
+            $('#arrayManu').val(arrCString);
+        }
+
+
+
+
+
 https://jsfiddle.net/56hs2nmn/
 https://stackoverflow.com/questions/32418988/not-able-to-sort-entries-in-textarea-basis-on-key-and-value-both-using-javascrip
 
