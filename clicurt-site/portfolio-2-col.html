@@ -9,6 +9,21 @@
 <body>
 <pre>
 
+    function arrayKeys() {
+          var array1 = ["12_1","12_2","12_3","12_4"];
+          var array2 = ["Step1","Step2","Step3","Step4"];
+          var array3 = [];
+  
+          array1.forEach(function (key,i) {
+              array3[key] = array2[i];
+          });
+          console.log("array one :", array1);
+          console.log("array two :", array2);
+          console.log("array three :", array3);
+          console.log("array three :", array3["12_3"]);
+    }
+
+
 function arrayKeys() {
           var array1 = ["12_1","12_2","12_3","12_4"];
           var array2 = ["Step1","Step2","Step3","Step4"];
