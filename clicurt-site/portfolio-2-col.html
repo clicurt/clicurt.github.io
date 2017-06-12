@@ -9,7 +9,22 @@
 <body>
 <div><xmp>
 
-
+    function arrayKeys() {
+          var array1 = ["12_1","12_2","12_3","12_4"];
+          var array2 = ["Step1","Step2","Step3","Step4"];
+          var array3 = [];
+          var k= 0;
+          for(var key in array2) {
+              key = array1[key];
+              console.log("key " + key + " has value " + array2[k]);
+              array3[key] = array2[k];
+              k++;
+              
+          }
+          console.log("array one :", array1);
+          console.log("array two :", array2);
+          console.log("array three :", array3);
+    }
 
 
 @*
