@@ -226,6 +226,52 @@ public class FileModel {
     }
 
 
+ public synchronized static boolean convert(File uploadedFile) throws OfficeException, InterruptedException {
+        Runnable conversion = new Runnable() {
+            @Override
+            public void run() {
+                // 1) Start LibreOffice in headless mode.
+                DefaultOfficeManagerBuilder configuration = new DefaultOfficeManagerBuilder()
+                        .setOfficeHome(new File(Configuration.root().getString("OFFICE_HOME")))
+                        .setProcessManager(new PureJavaProcessManager())
+                        .setTaskExecutionTimeout(300000L);
+                OfficeManager officeManager = configuration.build();
+                try {
+                    officeManager.start();
+
+                    // 2) Create JODConverter converter
+                    OfficeDocumentConverter converter = new OfficeDocumentConverter(officeManager);
+
+                    // 3) Create PDF
+                    createPDF(converter, uploadedFile);
+                }
+                catch (OfficeException e) {
+                    Logger.info("Office manager cannot start");
+                }
+                finally {
+                    // 4) Stop LibreOffice in headless mode.
+                    if (officeManager != null) {
+                        try {
+                            officeManager.stop();
+                        }
+                        catch (OfficeException e) {
+                            Logger.info("Error! office manager malfunction");
+                        }
+                    }
+                }
+            }
+        };
+        ExecutorService executor = Executors.newCachedThreadPool();
+        executor.submit(conversion);
+        Logger.info("Thread submitted ..:" + executor);
+        executor.shutdown();
+        Logger.info("State:  {} ", executor.isShutdown());
+        executor.awaitTermination(5L, TimeUnit.NANOSECONDS);
+        Logger.info("Running in background...:" + executor);
+        return true;
+    }
+
+
 
 
 
