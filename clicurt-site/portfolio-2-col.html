@@ -9,7 +9,286 @@
 <body>
 <pre>
 
-    function arrayKeys() {
+    
+package controllers;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URLEncoder;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.util.Map;
+
+import org.apache.commons.io.FilenameUtils;
+import org.jodconverter.office.OfficeException;
+
+import com.fasterxml.jackson.databind.JsonNode;
+
+import models.FileModel;
+import models.PdfConvertor;
+import play.Configuration;
+import play.Logger;
+import play.libs.Json;
+import play.mvc.Controller;
+import play.mvc.Http.MultipartFormData;
+import play.mvc.Http.MultipartFormData.FilePart;
+import play.mvc.Result;
+
+/**
+ * This controller contains an action to handle HTTP requests to the
+ * application's home page.
+ */
+public class HomeController extends Controller {
+
+    /**
+     * An action that renders an HTML page with a welcome message. The
+     * configuration in the <code>routes</code> file means that this method will
+     * be called when the application receives a <code>GET</code> request with a
+     * path of <code>/</code>.
+     */
+    public Result index() {
+        return ok(views.html.index.render("Welcome"));
+    }
+
+    public Result receiveData() {
+        JsonNode json = request().body().asJson().get("id");
+        return ok(json);
+    }
+
+    public Result upload() throws IOException{
+
+        MultipartFormData<File> body = request().body().asMultipartFormData();
+        if (body == null) {
+            return badRequest("Invalid request");
+        }
+
+        FilePart<File> file = body.getFile("file");
+        String fileName = "";
+        if (file == null) {
+            flash("error", "Missing file");
+            return badRequest();
+        }
+        else {
+            fileName = file.getFilename();
+            String[] baseName = fileName.split("\\.(?=[^\\.]+$)");
+            String contentType = file.getContentType();
+            File inputStream = (File) file.getFile();
+            Logger.info("This is inputStream {}:", inputStream.toPath());
+            String fullPath = Configuration.root().getString("UPLOAD_PATH");
+
+            if (!contentType.isEmpty()) {
+                try {
+                    File newdir = new File(fullPath + FilenameUtils.getBaseName(fileName)
+                            + FilenameUtils.EXTENSION_SEPARATOR + FilenameUtils.getExtension(fileName));
+                    Logger.info("Directory newdir {}: ", newdir.toPath());
+                    String encodedString = URLEncoder.encode(baseName[0], "UTF-8");
+                    String repEncoded = encodedString.replace("+", "_");
+                    File modDir = new File(fullPath + repEncoded + "." + baseName[1]);
+
+                    newdir.mkdirs();
+                    File endir = new File(fullPath + "/temp/"+ FilenameUtils.getBaseName(fileName)
+                    + FilenameUtils.EXTENSION_SEPARATOR + FilenameUtils.getExtension(fileName));
+                    Files.copy(inputStream.toPath(), newdir.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                    File ekndir = new File(fullPath + "/tmp/"+ FilenameUtils.getBaseName(fileName)
+                    + FilenameUtils.EXTENSION_SEPARATOR + FilenameUtils.getExtension(fileName));
+//                    PdfConvertor.convert(newdir);
+                    InputStream is = new FileInputStream(newdir.getAbsolutePath());
+                    Logger.info("Directory name {}: ", newdir.getName());
+                    OutputStream outputStream = new FileOutputStream(endir.getAbsolutePath());
+                    if(FilenameUtils.getExtension(fileName).equalsIgnoreCase("csv")) {
+                        FileModel.removeBom(is);
+                        int read = 0;
+                        byte[] bytes = new byte[1024];
+                        while ((read = is.read(bytes)) != -1) {
+                            outputStream.write(bytes, 0, read);
+                        }
+                        outputStream.close();
+//                        FileModel.transform(endir, "UTF-8", ekndir, "SHIFT-JIS"); 
+                    }
+                    PdfConvertor.convert(endir);
+                    Logger.info("inputStream toPath {}: ", inputStream.toPath());
+                    Logger.info("endir.getName() {}: ", endir.getAbsolutePath());
+                    Logger.info("inputStream toPath {}: ", inputStream.toPath());
+                    Files.copy(inputStream.toPath(), modDir.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                }
+                catch (Exception e) {
+                    throw new IllegalStateException(e);
+                }
+            }
+        }
+
+        return ok(Json.toJson("File " + fileName + " uploaded"));
+    }
+
+    public Result receiveDataDB() {
+        Map<String, String[]> params = request().body().asFormUrlEncoded();
+        String name = params.get("name")[0].toString();
+        String comment = params.get("comment")[0].toString();
+
+        return ok(Json.toJson("success: " + name + " " + comment));
+    }
+    
+    public Result convert() throws OfficeException, InterruptedException {
+//       if(!PdfConvertor.convert()) {
+//           return badRequest("Failed");
+//       }
+        return ok(Json.toJson("Success"));
+    }
+
+//    public static Result getImage(Long id) {
+//        Entity entity = Entity.find.byId(id);
+//        InputStream input = null;
+//
+//        if (entity.getImage() != null) {
+//            input = new ByteArrayInputStream(entity.getImage());
+//        } else {
+//            try {
+//                byte[] byteArray;
+//                File file = Play.getFile("/public/images/no_photo.jpg", Play.current());
+//                byteArray = IOUtils.toByteArray(new FileInputStream(file));
+//                input = new ByteArrayInputStream(byteArray);
+//            } catch (Exception e) {
+//
+//            }
+//        }
+//
+//        return ok(input).as("image/jpeg");
+//    }
+
+}
+
+
+
+
+
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.io.input.BOMInputStream;
+
+public class FileModel {
+
+    public static void getAll(){
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("name", "mkyong");
+        map.put("age", 29);
+    }
+    
+    public static Map<Integer, String>  map() {
+        Map<Integer, String> productMap = new  HashMap<>();
+        productMap.put(1, "Keyboard");
+        productMap.put(2, "Mouse");
+        productMap.put(3, "Monitor");
+        return productMap;
+    }
+    
+    public static void transform(File source, String srcEncoding, File target, String tgtEncoding) throws IOException {
+        BufferedReader br = null;
+        BufferedWriter bw = null;
+        try{
+            br = new BufferedReader(new InputStreamReader(new FileInputStream(source),srcEncoding));
+            bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(target), tgtEncoding));
+            char[] buffer = new char[16384];
+            int read;
+            while ((read = br.read(buffer)) != -1)
+                bw.write(buffer, 0, read);
+        } finally {
+            try {
+                if (br != null)
+                    br.close();
+            } finally {
+                if (bw != null)
+                    bw.close();
+            }
+        }
+    }
+    
+    public static void removeBom(InputStream inputStream) throws IOException {
+        @SuppressWarnings("resource")
+        BOMInputStream bis = new BOMInputStream(inputStream);
+        if (bis.hasBOM()) {
+            bis.skip(bis.getBOM().length()-3);
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function arrayKeys() {
           var array1 = ["12_1","12_2","12_3","12_4"];
           var array2 = ["Step1","Step2","Step3","Step4"];
           var array3 = [];
