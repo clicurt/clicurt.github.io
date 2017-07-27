@@ -9,6 +9,51 @@
 <body>
 <pre>
 
+try {
+                    
+    String encodedString = URLEncoder.encode(baseName[0], "UTF-8");
+    String repEncoded = encodedString.replace("+", "_");
+    File modDir = new File(fullPath + repEncoded + "." + baseName[1]);
+
+    
+//                    PdfConvertor.convert(newdir);
+    InputStream inputStream;
+    OutputStream outputStream;
+    
+    if(FILE_EXT.equalsIgnoreCase("csv")) {
+        File outDir = new File(fullPath + "/tmp/" + FILE_NAME + POINT + FILE_EXT);
+        inputStream = new FileInputStream(inputFile.getAbsolutePath());
+        outputStream = new FileOutputStream(outDir.getAbsolutePath());
+        FileModel.removeBom(inputStream);
+
+        
+        int read = 0;
+        byte[] bytes = new byte[1024];
+        while ((read = inputStream.read(bytes)) != -1) {
+            outputStream.write(bytes, 0, read);
+        }
+        inputStream.close();
+        outputStream.close();
+//                        FileModel.transform(endir, "UTF-8", ekndir, "SHIFT-JIS"); 
+    } else {
+        File newdir = new File(fullPath + FILE_NAME + POINT + FILE_EXT);
+        Logger.info("Directory newdir {}: ", newdir.toPath());
+        newdir.mkdirs();
+        Files.copy(inputFile.toPath(), newdir.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        Files.delete(newdir.toPath());
+        PdfConvertor.convert(newdir);
+    }
+    Logger.info("inputStream toPath {}: ", inputFile.toPath());
+    Files.copy(inputFile.toPath(), modDir.toPath(), StandardCopyOption.REPLACE_EXISTING);
+}
+catch (Exception e) {
+    throw new IllegalStateException(e);
+                }
+
+
+
+
+
     
 package controllers;
 
