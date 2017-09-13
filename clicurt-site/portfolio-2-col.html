@@ -9,6 +9,53 @@
 <body>
 <pre>
 
+
+
+
+gridComplete: function(){
+                    var params = [];
+                    
+                    saveparameters = {
+                        "successfunc" : null,
+                        "url" : 'clientArray',
+                        "extraparam" : { "times" :"fly", "now" : "eat"},
+                        "aftersavefunc" : function( response ) {
+                                              alert('saved');
+                                          },
+                        "errorfunc": null,
+                        "afterrestorefunc" : null,
+                        "restoreAfterError" : true,
+                        "mtype" : "POST"
+                    }
+                    data = {
+                            time : 'flies',
+                            meat : 'loaf'
+                    }
+                    term = JSON.stringify(data);
+                    var ids = jQuery("#list4").jqGrid('getDataIDs');
+                    for(var i=0;i < ids.length;i++){
+                        var cl = ids[i];
+                        be = "<input style='height:22px;width:20px;' type='button' value='E' onclick=\"jQuery('#list4').editRow('"+cl+"');\"  />"; 
+                        se = "<input style='height:22px;width:20px;' type='button' id='saveId' value='S' onclick=\"jQuery('#list4').saveRow('"+cl+"', '"+false+"', '@routes.HomeController.editGridData', '"+data["time"]+"');\" />"; 
+                        ce = "<input style='height:22px;width:20px;' type='button' value='C' onclick=\"jQuery('#list4').restoreRow('"+cl+"');\" />"; 
+                        jQuery("#list4").jqGrid('setRowData',ids[i],{act:be+se+ce});
+//                        $("#saveId").click(function() {
+                            var data = $("#list4").jqGrid('getRowData', cl);
+                            data.Id = ids[i];
+                            params.push(data);
+//                            console.log(params);
+//                        });
+                        
+                    }   
+//                    console.log($("#list4").jqGrid('getGridParam', savedRow));
+                },
+
+
+
+
+
+
+
 31-07-17
 
 public static void processUploadedFile(FilePart<File> file, MultipartFormData<File> body) {
