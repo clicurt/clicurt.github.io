@@ -10,46 +10,286 @@
 <pre>
 
 
+    @* showGrid Template File *@
+@import common._
 
+@main("Welcome to Play") {
 
-gridComplete: function(){
-                    var params = [];
-                    
-                    saveparameters = {
-                        "successfunc" : null,
-                        "url" : 'clientArray',
-                        "extraparam" : { "times" :"fly", "now" : "eat"},
-                        "aftersavefunc" : function( response ) {
-                                              alert('saved');
-                                          },
-                        "errorfunc": null,
-                        "afterrestorefunc" : null,
-                        "restoreAfterError" : true,
-                        "mtype" : "POST"
-                    }
-                    data = {
-                            time : 'flies',
-                            meat : 'loaf'
-                    }
-                    term = JSON.stringify(data);
-                    var ids = jQuery("#list4").jqGrid('getDataIDs');
-                    for(var i=0;i < ids.length;i++){
-                        var cl = ids[i];
-                        be = "<input style='height:22px;width:20px;' type='button' value='E' onclick=\"jQuery('#list4').editRow('"+cl+"');\"  />"; 
-                        se = "<input style='height:22px;width:20px;' type='button' id='saveId' value='S' onclick=\"jQuery('#list4').saveRow('"+cl+"', '"+false+"', '@routes.HomeController.editGridData', '"+data["time"]+"');\" />"; 
-                        ce = "<input style='height:22px;width:20px;' type='button' value='C' onclick=\"jQuery('#list4').restoreRow('"+cl+"');\" />"; 
-                        jQuery("#list4").jqGrid('setRowData',ids[i],{act:be+se+ce});
-//                        $("#saveId").click(function() {
-                            var data = $("#list4").jqGrid('getRowData', cl);
-                            data.Id = ids[i];
-                            params.push(data);
-//                            console.log(params);
-//                        });
-                        
-                    }   
-//                    console.log($("#list4").jqGrid('getGridParam', savedRow));
+<script type="text/javascript">
+
+        $(function() {
+            $.get("@routes.HomeController.getGridData", function(data, status){
+                showGrid(data);
+                console.log("Data: " + data );
+            });
+        });
+
+        var grid = $('#list4');
+        var initRaty = function(rowid) {
+            var rating = grid.getCell(rowid, 8); // the Ranking column has the index 4
+            // because we use rownumbers:true the index of the Ranking column will be 1 higher
+            $('#' + rowid +'> td:nth-child(9) > div').raty({
+                path:'@routes.Assets.versioned("images/raty/")',
+                start:rating,
+                readOnly:true
+            });
+        };
+        var lastSel;
+        var params = {};
+        params.comment = 'loaf';
+        var editparameters = {
+                keys : true,
+                oneditfunc : function(){
+                    console.log("start edit");
                 },
+                successfunc : function(xhr){
+                    console.log(xhr.responseText);
+                },
+                url : "@routes.HomeController.receiveDataDB",
+                extraparam : params,
+                restoreAfterError : true
+            }
 
+        var saveparameters = {
+                successfunc : function(xhr){
+                    console.log(xhr.responseText);
+                },
+                url : "@routes.HomeController.receiveDataDB",
+                extraparam : params,
+                aftersavefunc : function(){
+                    console.log('saved');
+                },
+                errorfunc: null,
+                afterrestorefunc : null,
+                restoreAfterError : true
+            }
+        var mydata = [
+                {id:"1",invdate:"2007-10-01",name:"test",note:"note",amount:"200.00",tax:"10.00",total:"210.00", rating:"4"},
+                {id:"2",invdate:"2007-10-02",name:"test2",note:"note2",amount:"300.00",tax:"20.00",total:"320.00", rating:"4"},
+                {id:"3",invdate:"2007-09-01",name:"test3",note:"note3",amount:"400.00",tax:"30.00",total:"430.00", rating:"3"},
+                {id:"4",invdate:"2007-10-04",name:"test",note:"note",amount:"200.00",tax:"10.00",total:"210.00", rating:"2"},
+                {id:"5",invdate:"2007-10-05",name:"test2",note:"note2",amount:"300.00",tax:"20.00",total:"320.00", rating:"4"},
+                {id:"6",invdate:"2007-09-06",name:"test3",note:"note3",amount:"400.00",tax:"30.00",total:"430.00", rating:"5"},
+                {id:"7",invdate:"2007-10-04",name:"test",note:"note",amount:"200.00",tax:"10.00",total:"210.00", rating:"4"},
+                {id:"8",invdate:"2007-10-03",name:"test2",note:"note2",amount:"300.00",tax:"20.00",total:"320.00", rating:"4"},
+                {id:"9",invdate:"2007-09-01",name:"test3",note:"note3",amount:"400.00",tax:"30.00",total:"430.00", rating:"4"}
+        ],
+        myDelOptions = {
+            // because I use "local" data I don't want to send the changes to the server
+            // so I use "processing:true" setting and delete the row manually in onclickSubmit
+            onclickSubmit: function (rp_ge, rowid) {
+                // reset the value of processing option to true to
+                // skip the ajax request to 'clientArray'.
+                rp_ge.processing = true;
+
+                // we can use onclickSubmit function as "onclick" on "Delete" button
+                // delete row
+                var grid = $('#list4');
+                grid.jqGrid('delRowData', rowid);
+                $("#delmod" + grid[0].id).hide();
+
+                if (grid[0].p.lastpage > 1) {
+                    // reload grid to make the row from the next page visable.
+                    // TODO: deleting the last row from the last page which number is higher as 1
+                    grid.trigger("reloadGrid", [{ page: grid[0].p.page}]);
+                }
+
+                return true;
+            },
+            processing: true
+        },
+        myEditOptions = {
+            // because I use "local" data I don't want to send the changes to the server
+            // so I use "processing:true" setting and delete the row manually in onclickSubmit
+            onclickSubmit: function (rp_ge, rowid) {
+            //     // reset the value of processing option to true to
+            //     // skip the ajax request to 'clientArray'.
+                rp_ge.processing = true;
+            //
+            //     // we can use onclickSubmit function as "onclick" on "Delete" button
+            //     // delete row
+                // var $self = $('#list4');
+                var grid = $('#list4');
+                grid.jqGrid("saveRow", rowid, saveparameters);
+                // var $self = $('#list4'),
+            //     // savedRows array is not empty if some row is in inline editing mode
+                // savedRows = $self.jqGrid("getGridParam", "savedRow");
+                // if (savedRows.length > 0) {
+                //     $self.jqGrid("restoreRow", savedRows[0].id);
+                // }
+                // $self.jqGrid("editRow", rowid, editparameters);
+                console.log('Used');
+
+                return true;
+            },
+            processing: true
+        };
+        // function SaveStudentEvaluation(index) {
+        //     saveparameters = {
+        //         "successfunc": null,
+        //         "url": null,
+        //         "extraparam": {},
+        //         "aftersavefunc": null,
+        //         "errorfunc": null,
+        //         "afterrestorefunc": null,
+        //         "restoreAfterError": true,
+        //         "mtype": "POST"
+        //       }
+        // }
+
+        // var orgRowActions = $.fn.fmatter.rowactions;
+        //    $.fn.fmatter.rowactions = function (e, act) {
+        //        var $grid = $(this).closest("table.ui-jqgrid-btable"),
+        //            rowid = $(this).closest("tr.jqgrow").attr("id");
+        //        if (act === "edit") {
+        //            $grid.jqGrid("viewGridRow", rowid);
+        //         //    $grid.jqGrid('editRow', rowid, editparameters);
+        //            return false;
+        //        }
+        //        return orgRowActions.call(this, e, act);
+        //    }
+        function showGrid() {
+            var postData = {};
+            postData.time = "travel";
+            postData.ring = "loard";
+            jQuery("#list4").jqGrid({
+                datatype: "local",
+                pager: "#jqGridPager",
+                height: 250,
+                colNames:['Inv No','Date', 'Client', 'Amount','Tax','Total','Notes', 'Rating', 'Actions'],
+                colModel:[
+                    {name:'id',index:'id', width:60, sorttype:"int", editable:true},
+                    {name:'invdate',index:'invdate', width:90, sorttype:"date", editable:true},
+                    {name:'name',index:'name', width:100, editable:true},
+                    {name:'amount',index:'amount', width:80, align:"right",sorttype:"float", editable:true},
+                    {name:'tax',index:'tax', width:80, align:"right",sorttype:"float", editable:true},
+                    {name:'total',index:'total', width:80,align:"right",sorttype:"float", editable:true},
+                    {name:'note',index:'note', width:150, sortable:false, editable:true},
+                    {name:'rating',index:'rating', width:150, sortable:false, editable:true, title: false,
+                        formatter: function(cellvalue, options, rowObject) {
+                            // insert div needed for the raty plugin
+                            // and insert a hidden span with the rating value
+                            return '<div></div><span style="display: none;">'+cellvalue+'</span>';
+                        }, unformat: function (cellvalue, options, cellobject) {
+                            // get rating value from the hidden span
+                            return cellobject.find("span").text();
+                        }, edittype:'custom', editoptions: {
+                            custom_element: function(value, options) {
+                                var val = $(value);
+                                var elem = $('<div id="'+options.id+'"/>');
+                                setTimeout(function(){
+                                    elem.raty({
+                                        path:'@routes.Assets.versioned("images/raty/")',
+                                        start:(val.length>1? val[1].innerText: value)
+                                    });
+                                }, 100);
+                                return elem[0];
+                            },
+                            custom_value: function(elem) {
+                                return elem.find("input").val();
+                            }
+                        }
+                  },
+                 {name:'act',index:'act', width:75,sortable:false, formatter: buttonFormat
+//                        formatoptions : {
+//                            keys : true,
+//                            delOptions : myEditOptions,
+//                            // editOptions : this.beforeSubmitCell,
+//                            editbutton : true,
+//                            delbutton : true
+//                        },
+                 }
+                ],
+                viewrecords: true,
+                loadComplete: function() {
+                    var ids = grid.getDataIDs();
+                    for(var i=0;i<ids.length;i++){
+                        initRaty(ids[i]);
+                    }
+                },
+                // ajaxRowOptions: { contentType: "application/json", dataType: "json" },
+                // serializeRowData: function (data) { return JSON.stringify(data); },
+                caption: "Manipulating Array Data",
+                onSelectRow: function(id){
+//                    var $self = $(this),
+//                    // savedRows array is not empty if some row is in inline editing mode
+//                    savedRows = $self.jqGrid("getGridParam", "savedRow");
+//                    if (savedRows.length > 0) {
+//                        $self.jqGrid("restoreRow", savedRows[0].id);
+//                    }
+//                    $self.jqGrid("editRow", rowid, editparameters);
+                    if (id && id !== lastSel) {
+                        // cancel editing of the previous selected row if it was in editing state.
+                        // jqGrid hold intern savedRow array inside of jqGrid object,
+                        // so it is safe to call restoreRow method with any id parameter
+                        // if jqGrid not in editing state
+                        if (typeof lastSel !== "undefined") {
+                            grid.jqGrid('restoreRow',lastSel);
+                            var cell = $('#' + lastSel +'> td:nth-child(5)');
+                            var spans = cell.find('span');
+                            if (spans.length > 1 ) {
+                                // if the lastSel row was not only selected, but also
+                                // was in editing mode, get the hidden text with the ranking
+                                var rating = cell.find('span')[1].innerText;
+                                cell.find('div').raty({
+                                    path:'@routes.Assets.versioned("images/raty/")',
+                                    start:rating,
+                                    readOnly:true
+                                });
+                            }
+                        }
+                        lastSel = id;
+                    }
+                },
+                rownumbers : true,
+                gridComplete: function(){
+                },
+                editurl: "@routes.HomeController.receiveDataDB",
+                // cellEdit : true,
+                // cellsubmit : 'remote',
+                // cellurl : '@routes.HomeController.receiveDataDB',
+                // beforeSubmitCell : function(rowid,celname,value,iRow,iCol) {
+                //   if( rowid == 1 ) {
+                //     return {comment:"value1"}
+                //   } else{
+                //     return {}
+                //   }
+                // }
+            });
+            for(var i=0;i<=mydata.length;i++) {
+                $("#list4").jqGrid('addRowData',i+1,mydata[i]);
+            }
+            $.extend(true, $.jgrid.inlineEdit, {
+                beforeSaveRow: function (option, rowId) {
+                    option.oneditfunc = function(){
+                        console.log("start edit");
+                    },
+                    option.successfunc = function(xhr){
+                        console.log(xhr.responseText);
+                    },
+                    option.url = "@routes.HomeController.receiveDataDB",
+                    option.extraparam = params,
+                    option.restoreAfterError = true
+                }
+            });
+     }
+
+        function buttonFormat( cellvalue, options, rowObject ){
+            be = "<input style='height:22px;width:20px;' type='button' value='E' onclick=\"jQuery('#list4').jqGrid('editRow', '"+options.rowId+"');\"  />";
+            se = "<input style='height:22px;width:20px;' type='button' id='saveId' value='S' onclick=\"jQuery('#list4').jqGrid('saveRow', '"+options.rowId+"');\"/>";
+            ce = "<input style='height:22px;width:20px;' type='button' value='C' onclick=\"jQuery('#list4').restoreRow('"+options.rowId+"');\" />";
+            return be + se + ce;
+        }
+
+    </script>
+
+    <div>
+        <input type="button" onclick="location.href='@routes.CountController.testGrid';" value="test grid page" />
+    </div>
+    <div style="margin-top:20px;">
+        <table id="list4"></table>
+    </div>
+}
 
 
 
@@ -69,7 +309,7 @@ public static void processUploadedFile(FilePart<File> file, MultipartFormData<Fi
             final String FILE_NAME = FilenameUtils.getBaseName(fileName);
             final String FILE_EXT = FilenameUtils.getExtension(fileName);
             final char POINT = FilenameUtils.EXTENSION_SEPARATOR;
-            
+
             String[] baseName = fileName.split("\\.(?=[^\\.]+$)");
             String contentType = file.getContentType();
             File inputFile = (File) file.getFile();
@@ -147,7 +387,7 @@ public static void processUploadedFile(FilePart<File> file, MultipartFormData<Fi
         if (bis.hasBOM()) {
             temp = bis.getBOM().toString();
         }
-        
+
         String encodeString = temp;
         bis.close();
         Logger.info("encodeString {} ", encodeString);
@@ -168,23 +408,23 @@ public static void processUploadedFile(FilePart<File> file, MultipartFormData<Fi
 
 
 try {
-                    
+
     String encodedString = URLEncoder.encode(baseName[0], "UTF-8");
     String repEncoded = encodedString.replace("+", "_");
     File modDir = new File(fullPath + repEncoded + "." + baseName[1]);
 
-    
+
 //                    PdfConvertor.convert(newdir);
     InputStream inputStream;
     OutputStream outputStream;
-    
+
     if(FILE_EXT.equalsIgnoreCase("csv")) {
         File outDir = new File(fullPath + "/tmp/" + FILE_NAME + POINT + FILE_EXT);
         inputStream = new FileInputStream(inputFile.getAbsolutePath());
         outputStream = new FileOutputStream(outDir.getAbsolutePath());
         FileModel.removeBom(inputStream);
 
-        
+
         int read = 0;
         byte[] bytes = new byte[1024];
         while ((read = inputStream.read(bytes)) != -1) {
@@ -192,7 +432,7 @@ try {
         }
         inputStream.close();
         outputStream.close();
-//                        FileModel.transform(endir, "UTF-8", ekndir, "SHIFT-JIS"); 
+//                        FileModel.transform(endir, "UTF-8", ekndir, "SHIFT-JIS");
     } else {
         File newdir = new File(fullPath + FILE_NAME + POINT + FILE_EXT);
         Logger.info("Directory newdir {}: ", newdir.toPath());
@@ -212,7 +452,7 @@ catch (Exception e) {
 
 
 
-    
+
 package controllers;
 
 import java.io.File;
@@ -310,7 +550,7 @@ public class HomeController extends Controller {
                             outputStream.write(bytes, 0, read);
                         }
                         outputStream.close();
-//                        FileModel.transform(endir, "UTF-8", ekndir, "SHIFT-JIS"); 
+//                        FileModel.transform(endir, "UTF-8", ekndir, "SHIFT-JIS");
                     }
                     PdfConvertor.convert(endir);
                     Logger.info("inputStream toPath {}: ", inputStream.toPath());
@@ -334,7 +574,7 @@ public class HomeController extends Controller {
 
         return ok(Json.toJson("success: " + name + " " + comment));
     }
-    
+
     public Result convert() throws OfficeException, InterruptedException {
 //       if(!PdfConvertor.convert()) {
 //           return badRequest("Failed");
@@ -390,7 +630,7 @@ public class FileModel {
         map.put("name", "mkyong");
         map.put("age", 29);
     }
-    
+
     public static Map<Integer, String>  map() {
         Map<Integer, String> productMap = new  HashMap<>();
         productMap.put(1, "Keyboard");
@@ -398,7 +638,7 @@ public class FileModel {
         productMap.put(3, "Monitor");
         return productMap;
     }
-    
+
     public static void transform(File source, String srcEncoding, File target, String tgtEncoding) throws IOException {
         BufferedReader br = null;
         BufferedWriter bw = null;
@@ -419,7 +659,7 @@ public class FileModel {
             }
         }
     }
-    
+
     public static void removeBom(InputStream inputStream) throws IOException {
         @SuppressWarnings("resource")
         BOMInputStream bis = new BOMInputStream(inputStream);
@@ -541,7 +781,7 @@ function arrayKeys() {
           var array1 = ["12_1","12_2","12_3","12_4"];
           var array2 = ["Step1","Step2","Step3","Step4"];
           var array3 = [];
-  
+
           array1.forEach(function (key,i) {
               array3[key] = array2[i];
           });
@@ -562,7 +802,7 @@ function arrayKeys() {
               console.log("key " + key + " has value " + array2[k]);
               array3[key] = array2[k];
               k++;
-              
+
           }
           console.log("array one :", array1);
           console.log("array two :", array2);
@@ -716,7 +956,7 @@ https://stackoverflow.com/questions/32418988/not-able-to-sort-entries-in-textare
               console.log("key " + key + " has value " + array2[k]);
               array3[key] = array2[k];
               k++;
-              
+
           }
           console.log("array one :", array1);
           console.log("array two :", array2);
