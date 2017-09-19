@@ -8,7 +8,14 @@
 
 <body>
 <pre>
-
+    addSlot = $.grep(slotIds, function(e, i) {
+      		return (e.indexOf(addId) == 0);
+      });
+      console.log("Add", addSlot);
+      removeSlot = $.grep(slotIds, function(e, i) {
+      		return (e.indexOf(addId) != 0);
+      });
+      console.log("Remove", removeSlot);
 
     @* showGrid Template File *@
 @import common._
@@ -173,7 +180,8 @@
                         }, unformat: function (cellvalue, options, cellobject) {
                             // get rating value from the hidden span
                             return cellobject.find("span").text();
-                        }, edittype:'custom', editoptions: {
+                        }, edittype:'custom',
+                        editoptions: {
                             custom_element: function(value, options) {
                                 var val = $(value);
                                 var elem = $('<div id="'+options.id+'"/>');
