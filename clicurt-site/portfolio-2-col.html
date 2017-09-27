@@ -8,6 +8,34 @@
 
 <body>
 <pre>
+
+
+public class Names {
+    private static final Logger LOGGER = Logger.getLogger(Names.class.getName());
+    public static void typeOne(String str) {
+        Integer increament = Integer.valueOf(str.substring(str.length() - 1)) + 1;
+        LOGGER.log(Level.INFO, () -> str.replace(str.substring(str.length() - 1), String.valueOf(increament)));
+    }
+
+    public static void typeTwo(String str) {
+        String index = str.substring(str.indexOf('_') - 1, str.indexOf('_'));
+        Integer increament = Integer.valueOf(index) + 1;
+        LOGGER.log(Level.INFO, () -> str.replace(str.substring(str.indexOf('_') - 1, str.indexOf('_')), String.valueOf(increament)));
+    }
+
+    public static void main(String[] args) {
+        String prevVtx = "measurementStep";
+        String str = "23_5";
+        if("measurementStep".equals(prevVtx)) {
+            Names.typeOne(str);
+        } else {
+            Names.typeTwo(str);
+        }
+    }
+}
+
+
+
     addSlot = $.grep(slotIds, function(e, i) {
       		return (e.indexOf(addId) == 0);
       });
