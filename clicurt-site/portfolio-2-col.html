@@ -8,7 +8,19 @@
 
 <body>
 <pre>
+    for (var i=0; i< all[0].length; i++) {
+    	if(valueA.length != 0) {
+    		if(all[0][i] === valueA[0] ) {
+        	swap(all[0], i, 0);
+        }
+    	}
+      if(valueB.length != 0) {
+      	if(all[1][i] === valueB[0] ) {
+        	swap(all[1], i, 0);
+        }
+      }
 
+      
     public static void listSize() {
            List<String> testL = new ArrayList<>(Arrays.asList("name1", "name4", "name7"));
            int listS = testL.size();
@@ -32,7 +44,7 @@
            LOGGER.log(Level.INFO, "numList" + numList);
 
        }
-       
+
 public class Names {
     private static final Logger LOGGER = Logger.getLogger(Names.class.getName());
     public static void typeOne(String str) {
