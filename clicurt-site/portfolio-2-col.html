@@ -9,7 +9,30 @@
 <body>
 <pre>
 
+    public static void listSize() {
+           List<String> testL = new ArrayList<>(Arrays.asList("name1", "name4", "name7"));
+           int listS = testL.size();
+           int newSize = 0;
+           List<String> idList = new ArrayList<>(Arrays.asList("name3"));
+           List<Integer> numList = new ArrayList<>();
+           int number = 0;
+           for(String id : idList) {
+               number = Integer.parseInt(id.substring(id.length() - 1));
+               numList.add(number);
+           }
+           for(Integer num : numList) {
+               if(num == listS) {
+                   newSize = listS;
+               } else {
+                   newSize = num;
+               }
+           }
 
+           LOGGER.log(Level.INFO, "name" + newSize);
+           LOGGER.log(Level.INFO, "numList" + numList);
+
+       }
+       
 public class Names {
     private static final Logger LOGGER = Logger.getLogger(Names.class.getName());
     public static void typeOne(String str) {
