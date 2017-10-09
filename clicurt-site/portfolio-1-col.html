@@ -1,7 +1,413 @@
 <!DOCTYPE html>
+
+
+
+
+
+
+
 <html lang="en">
 
 <head>
+
+    <pre>
+        @* showGrid Template File *@
+    @import common._
+
+    @main("Welcome to Play") {
+
+    <script type="text/javascript">
+
+            $(function() {
+                var mydata = [
+                        {id:"1",invdate:"2007-10-01",name:"test",note:"note",amount:"200.00",tax:"10.00",total:"210.00", Ranking:"4"},
+                        {id:"2",invdate:"2007-10-02",name:"test2",note:"note2",amount:"300.00",tax:"20.00",total:"320.00", Ranking:"4"},
+                        {id:"3",invdate:"2007-09-01",name:"test3",note:"note3",amount:"400.00",tax:"30.00",total:"430.00", Ranking:"3"},
+                        {id:"4",invdate:"2007-10-04",name:"test",note:"note",amount:"200.00",tax:"10.00",total:"210.00", Ranking:"2"},
+                        {id:"5",invdate:"2007-10-05",name:"test2",note:"note2",amount:"300.00",tax:"20.00",total:"320.00", Ranking:"4"},
+                        {id:"6",invdate:"2007-09-06",name:"test3",note:"note3",amount:"400.00",tax:"30.00",total:"430.00", Ranking:"5"},
+                        {id:"7",invdate:"2007-10-04",name:"test",note:"note",amount:"200.00",tax:"10.00",total:"210.00", Ranking:"4"},
+                        {id:"8",invdate:"2007-10-03",name:"test2",note:"note2",amount:"300.00",tax:"20.00",total:"320.00", Ranking:"4"},
+                        {id:"9",invdate:"2007-09-01",name:"test3",note:"note3",amount:"400.00",tax:"30.00",total:"430.00", Ranking:"4"}
+                ];
+                createTest_Button();
+                noteButton();
+                alternate();
+                $.get("@routes.HomeController.getGridData", function(data, status){
+                    showGrid(mydata);
+    //                showGrid([data]);
+                    console.log("Data: " + data );
+                });
+                // var ret = {};
+                // var keys = [1,2,3,4,5,6];
+                // var values = ["a", "b", "c", "d", "e", "f"];
+                // ret = mapToObject(keys, values);
+                // var retArray = $.map(ret, function(index, value) {
+                //     console.log(index, value);
+                // });
+                // console.log(mapToObject(keys, values));
+                //
+                // var sample = ['189', '190', '182'];
+                // var mask = ['70', '72', '71', '182'];
+                // for (var j in sample) {
+                //     removeSlot = $.grep(mask, function(e) {
+             //  		    return (e == sample[j]);
+                //     });
+                // }
+                //
+                // console.log("removeSlot ", removeSlot);
+            });
+            function mapToObject(keys, values) {
+                var result = {};
+                for(var i=0; i < keys.length; i++) {
+                    result[keys[i]] = values[i];
+                }
+                return result;
+            }
+
+            var grid = $('#list4');
+
+            var lastSel;
+            var params = {};
+            params.comment = 'loaf';
+            params.Ranking = "4";
+            // var editparameters = {
+            //         keys : true,
+            //         oneditfunc : function(){
+            //             console.log("start edit");
+            //         },
+            //         successfunc : function(xhr){
+            //             console.log(xhr.responseText);
+            //         },
+            //         url : "@routes.HomeController.receiveDataDB",
+            //         extraparam : params,
+            //         restoreAfterError : true
+            //     }
+            //
+            // var saveparameters = {
+            //         successfunc : function(xhr){
+            //             console.log(xhr.responseText);
+            //         },
+            //         url : "@routes.HomeController.receiveDataDB",
+            //         extraparam : params,
+            //         aftersavefunc : function(){
+            //             console.log('saved');
+            //         },
+            //         errorfunc: null,
+            //         afterrestorefunc : null,
+            //         restoreAfterError : true
+            //     }
+
+           myDelOptions = {
+               // because I use "local" data I don't want to send the changes to the server
+               // so I use "processing:true" setting and delete the row manually in onclickSubmit
+               onclickSubmit: function (rp_ge, rowid) {
+                   // reset the value of processing option to true to
+                   // skip the ajax request to 'clientArray'.
+                   rp_ge.processing = true;
+
+                   // we can use onclickSubmit function as "onclick" on "Delete" button
+                   // delete row
+                   var grid = $('#list4');
+                   grid.jqGrid('delRowData', rowid);
+                   $("#delmod" + grid[0].id).hide();
+
+                   if (grid[0].p.lastpage > 1) {
+                       // reload grid to make the row from the next page visable.
+                       // TODO: deleting the last row from the last page which number is higher as 1
+                       grid.trigger("reloadGrid", [{ page: grid[0].p.page}]);
+                   }
+
+                   return true;
+               },
+               processing: true
+           },
+           myEditOptions = {
+               // because I use "local" data I don't want to send the changes to the server
+               // so I use "processing:true" setting and delete the row manually in onclickSubmit
+               onclickSubmit: function (rp_ge, rowid) {
+               //     // reset the value of processing option to true to
+               //     // skip the ajax request to 'clientArray'.
+                   rp_ge.processing = true;
+               //
+               //     // we can use onclickSubmit function as "onclick" on "Delete" button
+               //     // delete row
+                   // var $self = $('#list4');
+                   var grid = $('#list4');
+                   grid.jqGrid("saveRow", rowid, saveparameters);
+                   // var $self = $('#list4'),
+               //     // savedRows array is not empty if some row is in inline editing mode
+                   // savedRows = $self.jqGrid("getGridParam", "savedRow");
+                   // if (savedRows.length > 0) {
+                   //     $self.jqGrid("restoreRow", savedRows[0].id);
+                   // }
+                   // $self.jqGrid("editRow", rowid, editparameters);
+                   console.log('Used');
+
+                   return true;
+               },
+               processing: true
+           };
+
+            //  var orgRowActions = $.fn.fmatter.rowactions;
+            //     $.fn.fmatter.rowactions = function (e, act) {
+            //         var $grid = $(this).closest("table.ui-jqgrid-btable"),
+            //             rowid = $(this).closest("tr.jqgrow").attr("id");
+            //         if (act === "edit") {
+            //             $grid.jqGrid("viewGridRow", rowid);
+            //          //    $grid.jqGrid('editRow', rowid, editparameters);
+            //             return false;
+            //         }
+            //         return orgRowActions.call(this, e, act);
+                // }
+
+            function showGrid(data) {
+                var grid = $("#list4");
+                var initRaty = function(rowid) {
+                        var ranking = grid.getCell(rowid, 8); // the Ranking column has the index 4
+                        // because we use rownumbers:true the index of the Ranking column will be 1 higher
+                        $('#' + rowid +'> td:nth-child(9) > div').raty({
+                            path:'@routes.Assets.versioned("images/raty/")',
+                            start:ranking,
+                            readOnly:true
+                        });
+                };
+                var postData = {};
+                postData.time = "travel";
+                postData.ring = "loard";
+                jQuery("#list4").jqGrid({
+                    data : data,
+                    datatype: "local",
+                    height: 250,
+                    colNames:['Inv No','Date', 'Client', 'Amount','Tax','Total','Notes', 'Rating', 'Actions'],
+                    colModel:[
+                        {name:'id',index:'id', width:60, sorttype:"int", editable:true},
+                        {name:'invdate',index:'invdate', width:90, sorttype:"date", editable:true},
+                        {name:'name',index:'name', width:100, editable:true},
+                        {name:'amount',index:'amount', width:80, align:"right",sorttype:"float", editable:true},
+                        {name:'tax',index:'tax', width:80, align:"right",sorttype:"float", editable:true},
+                        {name:'total',index:'total', width:80,align:"right",sorttype:"float", editable:true},
+                        {name:'note',index:'note', width:150, sortable:false, editable:true},
+                        {name:'Ranking', editable:true, width:100, title: false,
+                            formatter: function(cellvalue, options, rowObject) {
+                                // insert div needed for the raty plugin
+                                // and insert a hidden span with the rating value
+                                return '<div></div><span style="display: none;">'+cellvalue+'</span>';
+                            }, unformat: function (cellvalue, options, cellobject) {
+                                // get rating value from the hidden span
+                                return cellobject.find("span").text();
+                            }, edittype:'custom', editoptions: {
+                                custom_element: function(value, options) {
+                                    var val = $(value);
+                                    var elem = $('<div id="'+options.id+'"/>');
+                                    setTimeout(function(){
+                                        elem.raty({
+                                            path:'@routes.Assets.versioned("images/raty/")',
+                                            start:(val.length>1? val[1].innerText: value)
+                                        });
+                                    }, 100);
+                                    return elem[0];
+                                },
+                                custom_value: function(elem) {
+                                    return elem.find("input").val();
+                                }
+                            }
+                        },
+                        {name:'act',index:'act', width:75,sortable:false, formatter: buttonFormat
+                        //    formatoptions : {
+                        //        keys : true,
+                        //        delOptions : myDelOptions,
+                        //        // editOptions : this.beforeSubmitCell,
+                        //        editbutton : true,
+                        //        delbutton : true
+                        //    },
+                         }
+                    ],
+                    viewrecords: true,
+                    gridview:true,
+                    loadComplete: function() {
+                        var ids = grid.getDataIDs();
+                        for(var i=0;i<ids.length;i++){
+                            initRaty(ids[i]);
+                        }
+                    },
+                    ondblClickRow: function(id, ri, ci) {
+                        // edit the row and save it on press "enter" key
+                        grid.jqGrid('editRow',id,true,null,null, 'clientArray', {}, initRaty);
+                    },
+                    // ajaxRowOptions: { contentType: "application/json", dataType: "json" },
+                    // serializeRowData: function (data) { return JSON.stringify(data); },
+                    caption: "Manipulating Array Data",
+                    onSelectRow: function(id){
+    //                    var $self = $(this),
+    //                    // savedRows array is not empty if some row is in inline editing mode
+    //                    savedRows = $self.jqGrid("getGridParam", "savedRow");
+    //                    if (savedRows.length > 0) {
+    //                        $self.jqGrid("restoreRow", savedRows[0].id);
+    //                    }
+    //                    $self.jqGrid("editRow", rowid, editparameters);
+                        if (id && id !== lastSel) {
+                            // cancel editing of the previous selected row if it was in editing state.
+                            // jqGrid hold intern savedRow array inside of jqGrid object,
+                            // so it is safe to call restoreRow method with any id parameter
+                            // if jqGrid not in editing state
+                            if (typeof lastSel !== "undefined") {
+                                grid.jqGrid('restoreRow',lastSel);
+                                var cell = $('#' + lastSel +'> td:nth-child(5)');
+                                var spans = cell.find('span');
+                                if (spans.length > 1 ) {
+                                    // if the lastSel row was not only selected, but also
+                                    // was in editing mode, get the hidden text with the ranking
+                                    var ranking = cell.find('span')[1].innerText;
+                                    cell.find('div').raty({
+                                        path:'@routes.Assets.versioned("images/raty/")',
+                                        start:ranking,
+                                        readOnly:true
+                                    });
+                                }
+                            }
+                            lastSel = id;
+                        }
+                    },
+                    rownumbers : true,
+                    gridComplete: function(){
+                        var ids = grid.getDataIDs();
+                        for(var i=0;i<ids.length;i++){
+                            initRaty(ids[i]);
+                        }
+                    },
+                    // editurl: "@routes.HomeController.editGridData",
+                    // cellEdit : true,
+                    // cellsubmit : 'remote',
+                    // cellurl : '@routes.HomeController.receiveDataDB',
+                    // beforeSubmitCell : function(rowid,celname,value,iRow,iCol) {
+                    //   if( rowid == 1 ) {
+                    //     return {comment:"value1"}
+                    //   } else{
+                    //     return {}
+                    //   }
+                    // }
+                });
+                // for(var i=0;i<=data.length;i++) {
+                //     $("#list4").jqGrid('addRowData',i+1,data[i]);
+                // }
+                // $.extend(true, $.jgrid.inlineEdit, {
+                //     beforeSaveRow: function (option, rowId) {
+                //         option.oneditfunc = function(){
+                //             console.log("start edit");
+                //         },
+                //         option.successfunc = function(xhr){
+                //             console.log(xhr.responseText);
+                //         },
+                //         option.url = "@routes.HomeController.editGridData",
+                //         option.extraparam = params,
+                //         option.aftersavefunc = function() {
+                //             console.log("saved");
+                //         },
+                //         option.afterrestorefunc = function() {
+                //             $("#list4").trigger("reloadGrid");
+                //             console.log("restored");
+                //         },
+                //         option.restoreAfterError = true
+                //     }
+                // });
+
+
+         }
+        function buttonFormat( cellvalue, options, rowObject ){
+            be = "<input style='height:22px;width:20px;' type='button' value='E' onclick=\"$('#list4').jqGrid('editRow', '"+options.rowId+"');\"  />";
+            se = "<input style='height:22px;width:20px;' type='button' value='S' onclick=\"$('#list4').jqGrid('saveRow', '"+options.rowId+"');\" />";
+            ce = "<input style='height:22px;width:20px;' type='button' value='C' onclick=\"$('#list4').jqGrid('restoreRow', '"+options.rowId+"', '"+afterrestorefunc()+"');\" />";
+            return be + se + ce;
+        }
+
+        function afterrestorefunc(){
+            $("#list4").trigger("reloadGrid");
+        }
+
+        function alternate() {
+            $("#note_btn").click(function () {
+            $("#list4").jqGrid('saveRow', 1, false, 'clientArray');
+            var rowData = $("#list4").jqGrid('getRowData');
+            var params = {};
+            params.name = 'loaf';
+            params.comment = 'coommet';
+            var dataToSend = JSON.stringify(rowData);
+            // datas = {
+            //         name: "great",
+            //         comment : "times"
+            //     };
+            // $.ajax({
+            //     url: "@routes.HomeController.editGridData()",
+            //     data: JSON.stringify(datas),
+            //     headers: {
+            //       'Content-Type': 'application/json'
+            //     },
+            //     type: 'POST',
+            //     success: function(res) {
+            //           if (res) {
+            //               console.log("Success!" + res);
+            //           } else {
+            //               console.log("Failed...");
+            //           }
+            //     },
+            // });
+            $.ajax({
+                url: '@routes.HomeController.editGridData',
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                data: dataToSend,
+                dataType: 'json',
+                async: false,
+                success: function (data, textStatus, jqXHR) {
+                    $("#list4").jqGrid('setGridParam', { datatype: 'json' });
+                    $("#list4").trigger('reloadGrid');
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert('Error saving data: ' + textStatus + " " + errorThrown);
+                }
+            });
+        return true;
+    });
+        }
+
+        var trace = createTest_Button();
+        function noteButton() {
+            var btnDef = {
+                    width : 120,
+                    label : "From Class",
+                    eventClickFunc: function(e, data) {
+                        console.log('From Class also clicked');
+                    }
+                }
+            return new Button("note_btn", btnDef);
+        }
+
+        function createTest_Button() {
+            var buttonDef = {
+                label : "test Grid page",
+                width : 120,
+                disabled : false,
+                eventClickFunc: function(e, data) {
+                    location.href='@routes.CountController.testGrid'
+                }
+            },
+            test = new Button('my_button', buttonDef);
+         }
+        </script>
+
+        <div>
+            <button id="my_button" style="margin-bottom : 20px;"></button>
+        </div>
+        <div>
+            <button id="note_btn"></button>
+        </div>
+        <div style="margin-top:20px;">
+            <table id="list4"></table>
+        </div>
+    }
+
+    </pre>
 
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
