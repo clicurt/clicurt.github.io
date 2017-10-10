@@ -11,11 +11,54 @@
 <head>
 
     <pre>
-        @* showGrid Template File *@
-    @import common._
-
-    @main("Welcome to Play") {
-
+        $.extend(true, $.jgrid.inlineEdit, {
+            beforeSaveRow: function (option, rowId) {
+                option.oneditfunc = function(){
+                    console.log("start edit");
+                },
+                option.successfunc = function(xhr){
+                    console.log(xhr.responseText);
+                },
+                option.url = "clientArray",
+                // option.extraparam = params,
+                option.aftersavefunc = function(rowId) {
+                     var rowData = $("#list4").jqGrid("getRowData", rowId);
+                     console.log(rowData);
+                     var id = $("#list4").jqGrid("getRowData", rowId).id;
+                    console.log(id);
+                    var name = $("#list4").jqGrid("getRowData", rowId).name;
+                   console.log(name);
+                   var note = $("#list4").jqGrid("getRowData", rowId).note;
+                   var tax = $("#list4").jqGrid("getRowData", rowId).tax;
+                   var total = $("#list4").jqGrid("getRowData", rowId).total;
+                   var invdate = $("#list4").jqGrid("getRowData", rowId).invdate;
+                   var amount = $("#list4").jqGrid("getRowData", rowId).amount;
+                   var params = {};
+                   params.comment = 'comment';
+                   params.name = name;
+                   params.tax = tax;
+                   params.total = total;
+                   params.invdate = invdate;
+                   params.amount = amount;
+                    $.ajax({
+                        url: '@routes.HomeController.editGridData',
+                        type: 'POST',
+                        data: params,
+                        success: function (data, textStatus, jqXHR) {
+                            $("#list4").jqGrid('setGridParam', { datatype: 'json' });
+                            $("#list4").trigger('reloadGrid');
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            alert('Error saving data: ' + textStatus + " " + errorThrown);
+                        }
+                    });
+                },
+                option.afterrestorefunc = function(rowId) {
+                    console.log("restored");
+                },
+                option.restoreAfterError = true
+            }
+        });
     <script type="text/javascript">
 
             $(function() {
