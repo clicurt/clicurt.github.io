@@ -9,8 +9,36 @@
 <html lang="en">
 
 <head>
-
     <pre>
+
+        {name: 'fullName', index: 'fullname', editable: true, edittype: 'custom', width: 300,
+              editoptions: {
+                  custom_element: formatRating,
+                  custom_value: unformatRating
+              }
+        },
+
+        function formatRating(cellValue, options, rowObject) {
+             var radioHtml = "<div class='star'><table cellspacing='5' width='100%'>" +
+             "<tr><td valign='top'>" +
+             "</td><td valign='top' width='10'>&raquo;</td>" +
+             "<td valign='top' width='180'>" +
+             "<input name='star3' type='radio' class='star' disabled='disabled'/>" +
+             "<input name='star3' type='radio' class='star' disabled='disabled'/>" +
+             "<input name='star3' type='radio' class='star' disabled='disabled' checked='checked'/>" +
+             "<input name='star3' type='radio' class='star' disabled='disabled'/>" +
+             "<input name='star3' type='radio' class='star' disabled='disabled'/>" +
+             "</td></tr></table></div>"
+             return radioHtml;
+
+         }
+
+         function unformatRating(cellValue, options, cellObject) {
+             var radioHtml = "";
+             return radioHtml;
+         }
+
+
         $.extend(true, $.jgrid.inlineEdit, {
             beforeSaveRow: function (option, rowId) {
                 option.oneditfunc = function(){
