@@ -3,6 +3,45 @@
 
 <head>
     <pre>
+
+        function validateRows() {
+        var nameArr = $("#list4").jqGrid('getCol',"name");
+        var amountArr = $("#list4").jqGrid('getCol',"amount");
+        var taxArr = $("#list4").jqGrid('getCol',"tax");
+        var idArr = $("#list4").jqGrid('getCol',"id");
+        console.log($("#list4").jqGrid('getCol',"name"));
+        for( var i in nameArr){
+            console.log("i value: ", nameArr[i]);
+            if(i === "test") {
+                console.log("found duplicate");
+            }
+        }
+        if(nameArr.indexOf("test") >= 0 && amountArr.indexOf("300.00") >= 0 && taxArr.indexOf("30.00") >= 0 && idArr.indexOf("10") >= 0) {
+            console.log("array contains duplicates");
+        } else {
+            console.log("array does not contain duplicates");
+        }
+    }
+
+
+        private Map<String,Object> getMap(String string) {
+            HashMap<String,Object> result = new HashMap<>();
+            Object object = JSON.parse(string);
+            if (object instanceof Map) {
+                Map<?,?> map = (Map)(object);
+                for (Map.Entry<?,?> entry : map.entrySet()) {
+                    String key = entry.getKey().toString();
+                    Object value = entry.getValue();
+                    result.put(key,value);
+                }
+            }
+            return result;
+        }
+https://www.mkyong.com/java/how-to-convert-java-map-to-from-json-jackson/
+http://theoryapp.com/parse-json-in-java/
+http://www.geeksforgeeks.org/parse-json-java/
+***************************************************************************
+
         package com.clicurt;
 
         import java.io.File;
