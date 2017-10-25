@@ -4,6 +4,17 @@
 <head>
     <pre>
 
+        ObjectMapper om = new ObjectMapper();
+        StringWriter sw = new StringWriter();
+        om.writeValue(object, sw);
+        Map<String, Object> map = om.readValue(sw.toString(), Map.class);
+
+        ************************************************************
+        ObjectMapper m = new ObjectMapper();
+        Map<String,Object> mappedObject = m.convertValue(myObject,Map.class);
+
+
+        ************************************************************
         function validateRows() {
         var nameArr = $("#list4").jqGrid('getCol',"name");
         var amountArr = $("#list4").jqGrid('getCol',"amount");
