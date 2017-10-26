@@ -4,6 +4,31 @@
 <head>
     <pre>
 
+
+
+        public static String getIDs(File file, String title) {
+                String searchKey = "";
+                String res = "";
+                String titleValue = "";
+                try (Scanner scanner = new Scanner(new File(file.getPath()))) {
+                    scanner.useDelimiter("[,\n]");
+                    while (scanner.hasNext()) {
+                        searchKey = scanner.next();
+                        if (!searchKey.contains(title)) {
+                            continue;
+                        }
+                        titleValue = scanner.next();
+                        res = titleValue;
+                        break;
+                    }
+                }
+                catch (FileNotFoundException e) {
+                    LOGGER.log(Level.INFO, "name" + e);
+                }
+                return res;
+            }
+
+            *************************************************************
         ObjectMapper om = new ObjectMapper();
         StringWriter sw = new StringWriter();
         om.writeValue(object, sw);
