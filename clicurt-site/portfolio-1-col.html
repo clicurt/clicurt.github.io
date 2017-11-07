@@ -4,6 +4,18 @@
 <head>
     <pre>
 
+            function buttonFormat( cellvalue, options, rowObject ){
+                be = "<input id='"+options.rowId+"eBnt' style='height:22px;width:20px;' type='button' value='E' onclick=\"afterrestorefunc('"+options.rowId+"eBnt');$('#list4').jqGrid('editRow', '"+options.rowId+"');\"  />";
+                se = "<input id='"+options.rowId+"sBnt' style='height:22px;width:20px;' type='button' value='S' onclick=\"$('#list4').jqGrid('saveRow', '"+options.rowId+"');\" />";
+                ce = "<input id='"+options.rowId+"cBnt' style='height:22px;width:20px;' type='button' value='C' onclick=\"$('#list4').jqGrid('restoreRow', '"+options.rowId+"', afterrestorefunc());\" />";
+                return be + se + ce;
+            }
+
+            function afterrestorefunc(elem){
+                $("#list4").trigger("reloadGrid");
+                $("#"+elem).prop('disabled', true);
+            }
+
 
 
         public static String getIDs(File file, String title) {
