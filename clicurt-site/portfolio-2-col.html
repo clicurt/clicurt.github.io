@@ -8,6 +8,173 @@
 
 <body>
 <pre>
+    https://github.com/facebookincubator/create-react-app
+    https://reactjs.org/tutorial/tutorial.html
+    curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+    echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+
+    https://fossies.org/linux/www/flow-linux64-v0.60.1.zip/
+    Fixed by:
+
+ln -s /usr/bin/nodejs /usr/bin/node
+http://www.proreactnative.com/Getting-Started-with-React-Native-on-Ubuntu-Linux/
+
+
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './index.css';
+
+class Square extends React.Component {
+  render() {
+    return (
+      <div className="square" onClick={() => alert('click')}>
+        {this.props.value}
+    </div>
+    );
+  }
+}
+
+class Board extends React.Component {
+  renderSquare(i) {
+    return <Square value={i} />;
+  }
+
+  render() {
+  const picture = [
+      {
+          title : "Johnny",
+          src : "./images/Johnny.jpg"
+      },
+      {
+          title : "Power puff",
+          src : "./images/ppg.jpg"
+      },
+      {
+          title : "2Pac",
+          src : "./images/tex.jpeg"
+      },
+      {
+          title : "Greyhounds",
+          src : "./images/ghs.jpg"
+      },
+      {
+          title : "Ed edd and Eddy",
+          src : "./images/eee.jpg",
+          height: "auto"
+      },
+      {
+          title : "Bearded man",
+          src : "./../images/beard.jpeg",
+          height: "auto"
+      }
+];
+    const status = 'Next player: X';
+    return (
+      <div className="parent">
+        <div className="main">
+          {this.renderSquare(<img src={picture[0].src} />)}
+        </div>
+        <div className="main">
+          {this.renderSquare(<img src={picture[1].src} />)}
+        </div>
+        <div className="main">
+          {this.renderSquare(<img src={picture[2].src} />)}
+        </div>
+        <div className="main">
+          {this.renderSquare(<img src={picture[3].src} />)}
+        </div>
+        <div className="main">
+          {this.renderSquare(<img src={picture[4].src} />)}
+        </div>
+        <div className="main">
+          {this.renderSquare(<img src={picture[5].src} />)}
+        </div>
+      </div>
+    );
+  }
+}
+
+class Game extends React.Component {
+  render() {
+    return (
+      <div className="game">
+        <div className="game-board">
+          <Board />
+        </div>
+        <div className="game-info">
+          <div>{/* status */}</div>
+          <ol>{/* TODO */}</ol>
+        </div>
+      </div>
+    );
+  }
+}
+
+// ========================================
+
+ReactDOM.render(
+  <Game />,
+  document.getElementById('root')
+);
+
+
+
+=========================================
+CSS
+body {
+  font: 14px "Century Gothic", Futura, sans-serif;
+  margin: 20px;
+}
+
+ol, ul {
+  padding-left: 30px;
+}
+
+.board-row:after {
+  clear: both;
+  content: "";
+  display: table;
+}
+
+div.main {
+    background-color: lightgrey;
+    width: 80px;
+    height: 80px;
+    border: 1px solid black;
+    padding: 10px;
+    margin: 10px;
+    display: inline-block;
+}
+
+div.parent {
+    background-color: pink;
+    width: 740px;
+    height: 120px;
+    border: 1px solid black;
+    padding: 10px;
+    margin: 25px;
+}
+
+img {
+    max-width: 100%;
+    max-height: 390px;
+    top: 5%;
+    left: 5%;
+}
+
+
+
+
+
+
+sudo npm install -g n
+sudo n latest
+
+
+
+
+
+
     for (var i=0; i< all[0].length; i++) {
     	if(valueA.length != 0) {
     		if(all[0][i] === valueA[0] ) {
