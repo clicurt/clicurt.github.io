@@ -1,4 +1,168 @@
 <pre>
+	'atom-text-editor[data-grammar~="jsx"]:not([mini])':
+	  'tab': 'emmet:expand-abbreviation-with-tab'
+
+App.js
+=================
+import React, {Component} from 'react';
+import uuid from 'uuid';
+import './App.css';
+import Projects from './Components/Projects';
+import AddProject from './Components/AddProject';
+
+class App extends Component {
+    constructor() {
+        super();
+        this.state = {
+            projects: []
+        }
+    }
+    componentWillMount() {
+        this.setState({
+            projects: [
+                {
+                    id: uuid.v4(),
+                    title: 'Business Website',
+                    category: "Web Design"
+                }, {
+                    id: uuid.v4(),
+                    title: 'Social App Website',
+                    category: "Mobile Design"
+                }, {
+                    id: uuid.v4(),
+                    title: 'EC Website',
+                    category: "Web Development"
+                }
+            ]
+        });
+    }
+    handleAddProject(project){
+        // console.log(project);
+        let projects = this.state.projects;
+        projects.push(project);
+        this.setState({projects: projects});
+    }
+
+    handleDeleteProject(id){
+        let projects = this.state.projects;
+        let index = projects.findIndex(x => x.id === id);
+        projects.splice(index, 1);
+        this.setState({project:projects});
+    }
+    render() {
+        return (
+            <div className="App">
+                <AddProject addProject={this.handleAddProject.bind(this)}/><br/>
+                <Projects projects={this.state.projects} onDelete={this.handleDeleteProject.bind(this)}/>
+            </div>
+        );
+    }
+}
+
+export default App;
+
+==============
+projectItem.js
+***************
+import React, { Component } from 'react';
+
+class ProjectItem extends Component {
+    deleteProject(id) {
+        this.props.onDelete(id);
+    }
+  render() {
+    return (
+      <li className="Project">
+          <strong>{this.props.project.title}</strong> : {this.props.project.category}
+          <a href="#" onClick={this.deleteProject.bind(this, this.props.project.id)}>X</a>
+      </li>
+    );
+  }
+}
+
+export default ProjectItem;
+**********
+
+Projects.js
+\\\\\\\\\\\\\\\\\\\
+import React, {Component} from 'react';
+import ProjectItem from './ProjectItem'
+
+class Projects extends Component {
+    deleteProject(id) {
+        this.props.onDelete(id);
+    }
+    render() {
+        let projectItems;
+        if (this.props.projects) {
+            projectItems = this.props.projects.map(project => {
+                return (<ProjectItem onDelete={this.deleteProject.bind(this)} key={project.title} project={project}/>);
+            });
+        }
+        return (
+            <div className="Projects">
+                <h3>Latest Projects</h3>
+                {projectItems}
+            </div>
+        );
+    }
+}
+
+export default Projects;
+
+\\\\\\\\\\\\\\\\\\\
+addProject
+++++++++++++++++++++++++
+import React, {Component} from 'react';
+import uuid from 'uuid';
+
+class AddProject extends Component {
+    static defaultProps = {
+        categories: ['Web Design', 'Web Development', 'Mobile Design']
+    }
+
+    handleSubmit(e) {
+        e.preventDefault();
+        if (this.refs.title.value === "") {
+            alert('title is required');
+        } else {
+            this.setState({newProject:{
+                id: uuid.v4(),
+                title: this.refs.title.value,
+                category: this.refs.category.value
+            }}, function(){
+                // console.log(this.state);
+                this.props.addProject(this.state.newProject);
+            });
+        }
+    }
+    render() {
+        let categoryOptions = this.props.categories.map(category => {
+            return <option key={category} value={category}>{category}</option>
+        });
+        return (
+            <div>
+                <h3>Add Projects</h3>
+                <form onSubmit={this.handleSubmit.bind(this)}>
+                    <div>
+                        <label htmlFor="">Title</label><br />
+                        <input type="text" ref="title"/>
+                    </div><br/>
+                    <div>
+                        <label htmlFor="">Category</label><br />
+                        <select ref="category">
+                            {categoryOptions}
+                        </select>
+                        <input type="submit" value="Submit"/><br />
+                    </div>
+                </form>
+            </div>
+        );
+    }
+}
+
+export default AddProject;
+
 	css
 	=======================================
 div.main {
