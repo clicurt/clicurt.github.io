@@ -217,6 +217,18 @@ class PictureBoard extends Component {
 
 export default PictureBoard;
 
+Utils.js
+************
+export function imagesLoaded(parentNode) {
+    const imgElements = parentNode.querySelectorAll('img');
+    for (const img of imgElements) {
+        if (!img.complete) {
+            return false;
+        }
+    }
+    return true;
+}
+
 commands
 ********************************
 npm install --save react-lazyload
