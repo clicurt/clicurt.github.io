@@ -1,4 +1,269 @@
 <pre>
+index.js
++++++++++++++
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './index.css';
+import PictureContainer from './PictureContainer';
+
+ReactDOM.render(<PictureContainer />, document.getElementById('root'));
+
+PictureContainer.js
+++++++++++++++++++++++
+import React, {Component} from 'react';
+import './index.css';
+import PictureBoard from './Components/PictureBoard';
+import PictureData from './Server/picData.json';
+
+class PictureContainer extends Component {
+    constructor() {
+        super();
+        this.state = {
+            images: []
+        }
+    }
+    componentWillMount() {
+        this.setState({
+            images: PictureData
+        })
+    }
+  render() {
+    return (
+        <div>
+          <PictureBoard images={this.state.images}/>
+        </div>
+    );
+  }
+}
+
+export default PictureContainer;
+
+
+index.CSS
+++++++++++++++
+.main {
+    background-color: lightgrey;
+    width: 80px;
+    height: 80px;
+    border: 1px solid black;
+    padding: 10px;
+    margin: 10px;
+    display: inline-block;
+}
+
+.parent {
+    background-color: pink;
+    width: 740px;
+    height: 120px;
+    border: 1px solid black;
+    padding: 10px;
+    margin: 25px;
+}
+
+img.like {
+    max-width: 120;
+    max-height: 100px;
+    top: 5%;
+    left: 5%;
+}
+
+div.spinner {
+    text-align: center;
+}
+
+.example-appear {
+  opacity: 0.01;
+}
+
+.example-appear.example-appear-active {
+  opacity: 1;
+  transition: opacity .5s ease-in;
+}
+.example-enter {
+  opacity: 0.01;
+}
+
+.example-enter.example-enter-active {
+  opacity: 1;
+  transition: opacity 500ms ease-in;
+}
+
+.example-leave {
+  opacity: 1;
+}
+
+.example-leave.example-leave-active {
+  opacity: 0.01;
+  transition: opacity 300ms ease-in;
+}
+
+.loader {
+  border: 16px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 16px solid #3498db;
+  width: 120px;
+  height: 120px;
+  -webkit-animation: spin 2s linear infinite; /* Safari */
+  animation: spin 2s linear infinite;
+}
+
+/* Safari */
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+Components/Placeholder.js
+++++++++++++++++++++++++++++++++
+import React from 'react';
+
+export default function Placeholder() {
+  return (
+    <div className="placeholder">
+      <div className="spinner">
+        <img src="./images/giphy.gif" alt="nothing"/>
+      </div>
+    </div>
+  );
+}
+
+Components/PictureFrame.js
+++++++++++++++++++++++++++++++++
+import React, {Component} from 'react';
+import LazyLoad from 'react-lazyload';
+import PlaceholderComponent from './Placeholder';
+import {imagesLoaded} from '../Utils';
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
+
+class PictureFrame extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            loading: true,
+        };
+    }
+
+    handleImageChange() {
+        // In React 0.13 use: 'this.refs.gallery.getDOMNode()'
+        const galleryElement = this.refs.pics;
+        this.setState({
+            loading: !imagesLoaded(galleryElement)
+        });
+    }
+
+    renderImage() {
+        return (
+            <LazyLoad throttle={200} height={300}
+            offset={[-200, 0]}
+            placeholder={< PlaceholderComponent />} once={true}>
+                <ReactCSSTransitionGroup
+                  transitionName="example"
+                  transitionAppear={true}
+                  transitionAppearTimeout={200}
+                  transitionEnter={false}
+                  transitionLeave={false}>
+                  <img ref="pics" style={{
+                     height: 100 + 'px',
+                     width: 120 + 'px'
+                 }} alt="nothing" src={this.state.loading ? "./images/grey.gif" : this.props.image.src}
+                 onClick={() => alert('clicked')}
+                 onLoad={this.handleImageChange.bind(this)}
+                 onError={this.handleImageChange.bind(this)}/>
+                </ReactCSSTransitionGroup>
+            </LazyLoad>
+        );
+    }
+    render() {
+        return (
+            this.renderImage()
+        );
+    }
+}
+
+export default PictureFrame;
+
+Components/PictureBoard.js
+++++++++++++++++++++++++++++++++
+
+import React, { Component } from 'react';
+import PictureFrame from './PictureFrame';
+
+class PictureBoard extends Component {
+    renderFrame(i) {
+        return <PictureFrame value={i}/>;
+    }
+
+    render() {
+        let pictureFrames;
+            if (this.props.images) {
+                pictureFrames = this.props.images.map(image =>{
+                    return (<PictureFrame key={image.title} image={image}/>);
+                });
+            }
+
+        return (
+            <div>
+                {pictureFrames}
+            </div>
+
+        );
+    }
+}
+
+export default PictureBoard;
+
+commands
+********************************
+npm install --save react-lazyload
+npm i react-addons-css-transition-group
+npm cache clean -f
+
+Others
++++++++++++++++++++++++++
+npm i -S react-lazy-image
+
+LINKS***********************************************************
+https://jasonslyvia.github.io/react-lazyload/examples/#/?_k=dee77u
+https://github.com/facebook/react
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	// create the preview window when the button is clicked
 	        preview_win = window.open('', 'preview', 'width=700,height=400,scrollbars=1,resizable=1');
 	        preview_win.document.write(self.editor.value);
