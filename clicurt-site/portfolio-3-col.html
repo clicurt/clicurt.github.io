@@ -1,4 +1,298 @@
 <pre>
+
+npm i react-popout-new
+
+import React, { Component } from 'react';
+// import logo from './logo.svg';
+import './App.css';
+import ToggleBtn from './toggleBtn';
+
+class App extends Component {
+  render() {
+    return (
+      <div className="App">
+        <header className="App-header">
+          <h1 className="App-title">Welcome to React</h1>
+        </header>
+        <div>
+            <ToggleBtn />
+        </div>
+        <p className="App-intro">
+          To get started, edit <code>src/App.js</code> and save to reload.
+        </p>
+      </div>
+    );
+  }
+}
+
+export default App;
+
+
+https://github.com/JakeGinnivan/react-popout
+
+import React, { Component } from 'react';
+import './App.css';
+import PopoutWindow from 'react-popout-new'
+import style from './child.css'
+// import PopoutWindow from './popoutWindow'
+import Container from './container'
+
+class ToggleBtn extends Component {
+  constructor(props) {
+    super(props);
+    this.popout = this.popout.bind(this);
+    this.popoutClosed = this.popoutClosed.bind(this);
+    this.state = { isPoppedOut: false, childData: ""};
+  }
+
+  popout() {
+    // var body = <div className="container">
+    //   <header>
+    //     <h1>City Gallery</h1>
+    //   </header>
+
+    //   <nav>
+    //     <ul>
+    //       <li><a href="#">London</a></li>
+    //       <li><a href="#">Paris</a></li>
+    //       <li><a href="#">Tokyo</a></li>
+    //     </ul>
+    //   </nav>
+
+    //   <article>
+    //     <h1>London</h1>
+    //     <p>London is the capital city of England. It is the most populous city in the  United Kingdom, with a metropolitan area of over 13 million inhabitants.</p>
+    //     <p>Standing on the River Thames, London has been a major settlement for two millennia, its history going back to its founding by the Romans, who named it Londinium.</p>
+    //   </article>
+
+    //   <footer>Copyright &copy; W3Schools.com</footer>
+    //   </div>
+
+    console.log(this.state.isPoppedOut);
+    this.setState({ isPoppedOut: true });
+    // {this.setState({childData: body})}
+  }
+
+  valueChange(){
+    console.log('it is change');
+  }
+
+  popoutClosed() {
+    console.log("checked: ", document.getElementById('toggleBtn').checked);
+    if(document.getElementById('toggleBtn').checked) {
+       document.getElementById('toggleBtn').click();
+    }
+    this.setState({ isPoppedOut: false });
+  }
+
+  render() {
+    return (
+      <div>
+        <label className="switch">
+          <input id="toggleBtn" type="checkbox" defaultChecked={this.state.isPoppedOut} onChange={this.state.isPoppedOut ? this.popoutClosed : this.popout} />
+          <span className="slider round"></span>
+        </label>
+        {this.state.isPoppedOut ?
+          <PopoutWindow title='Test' onClosing={this.popoutClosed} url='' >
+            <div className={style.main} id="the" style={{backgroundColor:"lightblue"}}>
+            <Container />
+              {/* <div>Popped out content! + {this.state.childData}</div> */}
+            </div>
+          </PopoutWindow>
+          : false}
+      </div>
+    );
+  }
+}
+
+export default ToggleBtn;
+
+
+import React from 'react';
+import ReactDOM from 'react-dom';
+import ToggleBtn from './toggleBtn';
+import PopoutWindow from './popoutWindow';
+import App from './App';
+
+
+export default class Container extends React.Component {
+  render() {
+    return (
+      <div className="main" style={{backgroundColor:"lightblue"}}>
+
+      <header>
+         <h1>City Gallery</h1>
+      </header>
+
+      <nav>
+        <ul>
+          <li><a href="#">London</a></li>
+          <li><a href="#">Paris</a></li>
+          <li><a href="#">Tokyo</a></li>
+          <li><a href="#">Moscow</a></li>
+        </ul>
+      </nav>
+
+      <article>
+        <h1>London</h1>
+        <p>London is the capital city of England. It is the most populous city in the  United Kingdom, with a metropolitan area of over 13 million inhabitants.</p>
+        <p>Standing on the River Thames, London has been a major settlement for two millennia, its history going back to its founding by the Romans, who named it Londinium.</p>
+      </article>
+
+      <footer>Copyright &copy; W3Schools.com</footer>
+      </div>
+    );
+  }
+}
+
+
+
+toggleBtn.js
+**************
+
+
+import React, { Component } from 'react';
+import './App.css';
+// import PopoutWindow from 'react-popout-new'
+import PopoutWindow from './popoutWindow'
+
+class ToggleBtn extends Component {
+    constructor(props) {
+        super(props);
+        this.popout = this.popout.bind(this);
+        this.popoutClosed = this.popoutClosed.bind(this);
+        this.state = { isPoppedOut: false, timer: 0 };
+    }
+
+    popout() {
+        console.log(this.state.isPoppedOut);
+        this.setState({isPoppedOut: true});
+    }
+
+    popoutClosed() {
+        document.getElementById('toggleBtn').click();
+        this.setState({isPoppedOut: false});
+    }
+
+    render() {
+    	return (
+    	  <div>
+    	  <label className="switch">
+    		  <input id="toggleBtn" type="checkbox" defaultChecked={this.state.isPoppedOut} onChange={this.state.isPoppedOut ? this.popoutClosed : this.popout}/>
+    		  <span className="slider round"></span>
+    	  </label>
+    		{ this.state.isPoppedOut ?
+    		<PopoutWindow title='Test' onClosing={this.popoutClosed} url=''>
+    		  <div>
+    		    <div>Popped out content! </div>
+    		  </div>
+    		</PopoutWindow>
+    		: false }
+    	  </div>
+    	);
+      }
+}
+
+export default ToggleBtn;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+_____________________________________
+import React, { Component } from 'react';
+import './App.css';
+import PopoutWindow from 'react-popout-new'
+// import PopoutWindow from './popoutWindow'
+
+class ToggleBtn extends Component {
+    constructor(props) {
+        super(props);
+        this.popout = this.popout.bind(this);
+        this.popoutClosed = this.popoutClosed.bind(this);
+        this.popoutContentClicked = this.popoutContentClicked.bind(this);
+        this.state = { isPoppedOut: false, timer: 0 };
+    }
+
+    popout() {
+        console.log(this.state.isPoppedOut);
+        this.setState({isPoppedOut: true});
+        if(this.state.isPoppedOut) {
+            this.popoutClosed();
+        }
+    }
+
+    popoutClosed() {
+    	this.setState({isPoppedOut: false});
+        document.getElementById('toggleBtn').click();
+        this.setState({isPoppedOut: false});
+    }
+
+    popoutContentClicked() {
+      this.popoutClosed();
+    }
+
+    render() {
+    	return (
+    	  <div>
+    	  <label className="switch">
+    		  <input id="toggleBtn" type="checkbox" defaultChecked={this.state.toggleOn} onChange={this.popout}/>
+    		  <span className="slider round"></span>
+    	  </label>
+    		{ this.state.isPoppedOut ?
+    		<PopoutWindow title='Test' onClosing={this.popoutClosed} url=''>
+    		  <div>
+    		    <div>Popped out content! </div>
+    		    <div onClick={this.popoutContentClicked}>Close</div>
+    		  </div>
+    		</PopoutWindow>
+    		: false }
+    	  </div>
+    	);
+      }
+}
+
+export default ToggleBtn;
+*************************************
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 index.js
 +++++++++++++
 import React from 'react';
