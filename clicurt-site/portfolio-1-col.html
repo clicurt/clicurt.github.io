@@ -2,7 +2,328 @@
 <html lang="en">
 
 <head>
-    <pre>
+<pre>
+
+
+
+<code>
+import React, { Component } from "react";
+import JSONTree from "react-json-tree";
+import { Treebeard } from "react-treebeard";
+
+class TreeListCreate extends Component {
+  constructor(props) {
+    super(props);
+    // this.state = {};
+    this.onToggle = this.onToggle.bind(this);
+  }
+  componentWillMount = () => {
+    this.setState({ state: this.props.treeState.data });
+  };
+
+  componentWillReceiveProps = (nextProps) => {
+    console.log("next props", nextProps)
+  }
+
+  onToggle(node, toggled) {
+    const { cursor } = this.state;
+    console.log("state...", cursor)
+    if (cursor) {
+      cursor.active = false;
+    }
+    node.active = true;
+    if (node.children) {
+      node.toggled = toggled;
+    }
+    this.setState({ cursor: node });
+  }
+
+  render() {
+    const json = {
+      array: this.props.treeState.data
+    };
+
+    return (
+      <div>
+        <h3>Display list</h3>
+        <Treebeard data={this.props.treeState.data} onToggle={this.onToggle} />
+        <JSONTree data={json} invertTheme hideRoot />
+        <hr />
+      </div>
+    );
+  }
+}
+
+export default TreeListCreate;
+
+
+
+
+// import dataset from "../Server/testData.json";
+
+const treeReducer = (
+  state = {
+    data: []
+  },
+  action
+) => {
+  switch (action.type) {
+    case "GET_TREE_DATA":
+      return {
+        ...state,
+        data: createDataTree(action.payload)
+      };
+    default:
+      return state;
+  }
+  // return state;
+};
+
+const createDataTree = dataset => {
+  let hashTable = Object.create(null);
+  let children = [];
+  let arr = dataset.label;
+  children = [
+    ...children,
+    { name: dataset.IMEO_SE },
+    { name: dataset.LABEL_STATUS }
+  ];
+
+  arr.map(aData => {
+    return hashTable[aData.name] = {
+      ...aData,
+      children: []
+    };
+  });
+
+  let dataTree = [];
+  let names = [];
+  let basename_level = [];
+  // let label = Object.create(null);
+  arr.map(data => {
+    names.push(data.name);
+    basename_level.push(data.basename_level);
+
+    let flag = false;
+    
+    for (var i in names) {
+      for (var j in basename_level) {
+        if (i === j) {
+          flag = true;
+        } else {
+          flag = false;
+        }
+      }
+    }
+
+    if (flag && hashTable[data.basename_level] !== undefined) {
+      return hashTable[data.basename_level].children.push(hashTable[data.name]);
+    } else {
+      return dataTree.push(hashTable[data.name]);
+    }
+  });
+
+  children = [
+    ...children,
+    ...dataTree,
+    { name: dataset.error.id },
+    { name: dataset.error.message }
+  ];
+  const mainTree = {
+    name: "picture data",
+    toggled: false,
+    children
+  };
+  return mainTree;
+};
+
+export default treeReducer;
+
+
+const getData = (dataset) => {
+  console.log("action payload", dataset)
+  return {
+    type: "GET_TREE_DATA",
+    payload: dataset
+  }
+} 
+
+export default getData;
+
+// const createDataTree = (dataset) => {
+//   let hashTable = Object.create(null);
+//   let header = []
+//   let children = []
+//   let arr = dataset.label
+//   children = [...children, {"name": dataset.IMEO_SE}, {"name": dataset.LABEL_STATUS}]
+
+//   arr.map(aData => {
+//     hashTable[aData.name] = { 
+//       ...aData, 
+//       children: [] 
+//     }
+//   });
+
+//   let dataTree = [];
+//   let names = []
+//   let baseName = []
+//   let label = Object.create(null)
+//   arr.map(data => {
+//     names.push(data.name);
+//     baseName.push(data.basename_level)
+//     let flag = false;
+//     for(var i in names) {
+//       for(var j in baseName) {
+//         if (i === j) {
+//           flag = true
+//         } else {
+//           flag = false
+//         }
+//       }
+//     }
+    
+//     if (flag && hashTable[data.basename_level] !== undefined) {
+//       hashTable[data.basename_level].children.push(hashTable[data.name]);
+//     } else {
+//       dataTree.push(hashTable[data.name]);
+//     }
+//   });
+    
+//   children = [...children, ...dataTree, { name: dataset.error.id }, { name: dataset.error.message }];
+//   var mainTree = {
+//     "name": "picture data",
+//     "toggled": false,
+//     children
+//   }
+//   return mainTree;
+// }
+
+// export default data;
+
+
+
+
+import React, { Component } from "react";
+import "../index.css";
+import PictureBoard from "../Components/PictureBoard";
+import { connect } from "react-redux";
+import { loadImages } from "../actions/imageAction";
+import getData from "../actions/treeAction";
+import TreeListCreate from "../Components/TreeListCreate";
+import dataset from "../Server/testData.json";
+
+class PictureContainer extends Component {
+  componentWillMount = () => {
+    if (this.props.loadImages()) {
+      this.props.loadImages();
+    }
+    this.props.getData(dataset);
+  }
+
+  // createDataTree = dataset => {
+  //   let hashTable = Object.create(null);
+  //   let children = [];
+  //   let arr = dataset.label;
+  //   children = [
+  //     ...children,
+  //     { name: dataset.IMEO_SE },
+  //     { name: dataset.LABEL_STATUS }
+  //   ];
+  //   arr.map(aData => {
+  //     hashTable[aData.name] = {
+  //       ...aData,
+  //       children: []
+  //     };
+  //   });
+
+  //   let dataTree = [];
+  //   let names = [];
+  //   let basename_levels = [];
+  //   let label = Object.create(null);
+  //   arr.map(data => {
+  //     names.push(data.name);
+  //     basename_levels.push(data.basename_level);
+  //     let flag = false;
+  //     for (var name in names) {
+  //       for (var basename_level in basename_levels) {
+  //         if (name === basename_level) {
+  //           flag = true;
+  //         } else {
+  //           flag = false;
+  //         }
+  //       }
+  //     }
+
+  //     if (flag && hashTable[data.basename_level] !== undefined) {
+  //       hashTable[data.basename_level].children.push(hashTable[data.name]);
+  //     } else {
+  //       dataTree.push(hashTable[data.name]);
+  //     }
+  //   });
+  //   let errorData = [];
+  //   errorData.push(dataset.error);
+
+  //   children = [...children, ...dataTree, dataset.error];
+  //   var goose = {
+  //     name: "react-treebeard",
+  //     toggled: false,
+  //     children
+  //   };
+  //   return goose;
+  // };
+
+  // toObject(arr) {
+  //   var rv = {};
+  //   for (var i = 0; i < arr.length; ++i) rv[i] = arr[i];
+  //   return rv;
+  // }
+
+  render() {
+    console.log("properties ", this.props);
+    return (
+      <div>
+        <PictureBoard images={this.props.images} />
+        <TreeListCreate
+          list={this.createDataTree}
+          treeState={this.props.treeState}
+        />
+      </div>
+    );
+  }
+}
+
+const mapStateToProps = state => {
+  return {
+    images: state.imageReducer,
+    treeState: state.treeReducer
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    loadImages: () => {
+      dispatch(loadImages());
+    },
+    getData: data => {
+      dispatch(getData(data));
+    }
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(PictureContainer);
+
+</code>
+
+
+
+
+
+
+
+
+
+
+    
 
             function buttonFormat( cellvalue, options, rowObject ){
                 be = "<input id='"+options.rowId+"eBnt' style='height:22px;width:20px;' type='button' value='E' onclick=\"afterrestorefunc('"+options.rowId+"eBnt');$('#list4').jqGrid('editRow', '"+options.rowId+"');\"  />";
