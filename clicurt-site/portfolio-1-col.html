@@ -3,6 +3,119 @@
 
 <head>
 <pre>
+    Actions
+    Promise approach
+
+    export default function createUser(params) {
+      const request = axios.post('http://www..., params);
+
+      return (dispatch) => {
+        function onSuccess(success) {
+          dispatch({ type: CREATE_USER, payload: success });
+          return success;
+        }
+        function onError(error) {
+          dispatch({ type: ERROR_GENERATED, error });
+          return error;
+        }
+        request.then(success => onSuccess, error => onError);
+      };
+    }
+
+    Components
+
+    Promise approach
+    import React, { Component } from 'react';
+    import { connect } from 'react-redux'
+    import createUser from 'path of createUser'
+    class userForm extends Component {
+      constructor(props) {
+        super(props);
+        this.onSubmit = this.onSubmit.bind(this);
+      }
+      onSubmit(e) {
+        e.preventDefault();
+        let formInput = this.refs.createUserForm;
+        this.props.createUser(formInput.value)
+          .then((response) => {
+            // Do something with the response... add more thens.. etc
+          }, (error) => {
+            // Do something with the error
+          });
+       }
+      render() {
+        return (
+          <form onSubmit={this.onSubmit}>
+            <input placeholder="current user" ref="createUserForm" />
+            <button>Submit</button>
+          </form>
+        );
+      }
+    }
+    export default connect(null, {
+      createUser
+    })(userForm)
+
+    
+    async/await approach
+
+    export default function createUser(params) {
+      return async dispatch => {
+        function onSuccess(success) {
+          dispatch({ type: CREATE_USER, payload: success });
+          return success;
+        }
+        function onError(error) {
+          dispatch({ type: ERROR_GENERATED, error });
+          return error;
+        }
+        try {
+          const success = await axios.post('http://www..., params);
+          return onSuccess(success);
+        } catch (error) {
+          return onError(error);
+        }
+      }
+    }
+
+
+Components
+    import React, { Component } from 'react';
+    import { connect } from 'react-redux'
+    import createUser from 'path of createUser'
+    class userForm extends Component {
+      constructor(props) {
+        super(props);
+        this.onSubmit = this.onSubmit.bind(this);
+      }
+      async onSubmit(e) {
+        e.preventDefault();
+
+        let formInput = this.refs.createUserForm;
+        try {
+          const response = await this.props.createUser(formInput.value);
+          // do something with response
+        } catch(error) {
+          // do something with error
+        }
+      }
+      render() {
+        return (
+          <form onSubmit={this.onSubmit}>
+            <input placeholder="current user" ref="createUserForm" />
+            <button>Submit</button>
+          </form>
+        );
+      }
+    }
+    export default connect(null, {
+      createUser
+    })(userForm)
+
+
+
+
+
 
 
 
@@ -105,7 +218,7 @@ const createDataTree = dataset => {
     basename_level.push(data.basename_level);
 
     let flag = false;
-    
+
     for (var i in names) {
       for (var j in basename_level) {
         if (i === j) {
@@ -146,7 +259,7 @@ const getData = (dataset) => {
     type: "GET_TREE_DATA",
     payload: dataset
   }
-} 
+}
 
 export default getData;
 
@@ -158,9 +271,9 @@ export default getData;
 //   children = [...children, {"name": dataset.IMEO_SE}, {"name": dataset.LABEL_STATUS}]
 
 //   arr.map(aData => {
-//     hashTable[aData.name] = { 
-//       ...aData, 
-//       children: [] 
+//     hashTable[aData.name] = {
+//       ...aData,
+//       children: []
 //     }
 //   });
 
@@ -181,14 +294,14 @@ export default getData;
 //         }
 //       }
 //     }
-    
+
 //     if (flag && hashTable[data.basename_level] !== undefined) {
 //       hashTable[data.basename_level].children.push(hashTable[data.name]);
 //     } else {
 //       dataTree.push(hashTable[data.name]);
 //     }
 //   });
-    
+
 //   children = [...children, ...dataTree, { name: dataset.error.id }, { name: dataset.error.message }];
 //   var mainTree = {
 //     "name": "picture data",
@@ -323,7 +436,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(PictureContainer);
 
 
 
-    
+
 
             function buttonFormat( cellvalue, options, rowObject ){
                 be = "<input id='"+options.rowId+"eBnt' style='height:22px;width:20px;' type='button' value='E' onclick=\"afterrestorefunc('"+options.rowId+"eBnt');$('#list4').jqGrid('editRow', '"+options.rowId+"');\"  />";
