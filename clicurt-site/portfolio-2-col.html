@@ -8,6 +8,50 @@
 
 <body>
 <pre>
+    .progress-bar {
+    	border: 1px solid black;
+    	background-color: #f0f0f0;
+    }
+    .progress-bar div {
+    	background-color: red;
+    	height: 1.25em;
+    }
+
+    <div class="progress-bar"><div style="width: 0"></div></div>
+
+    function delayedLoop(collection, delay, callback, context) {
+    	context = context || null;
+
+    	var i = 0,
+    	    nextInteration = function() {
+    	    	if (i === collection.length) {
+    	    		return;
+    	    	}
+
+    	    	callback.call(context, collection[i], i);
+    	    	i++;
+    	    	setTimeout(nextInteration, delay);
+    		};
+
+    	nextInteration();
+    }
+
+    var progressBar = document.querySelector(".progress-bar div"),
+        items = [1,2,3,4,5,6,7,8,9,10];
+
+    delayedLoop(items, 500, function(item, index) {
+        var width = (item / items.length * 100) + "%";
+    	progressBar.style.width = width;
+        progressBar.innerHTML = width;
+    });
+
+
+
+
+
+
+
+
     https://github.com/facebookincubator/create-react-app
     https://reactjs.org/tutorial/tutorial.html
     curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
