@@ -4,6 +4,194 @@
 <head>
 <pre>
 
+    import React, { Component } from "react";
+    import "../index.css";
+    import PictureBoard from "../Components/PictureBoard";
+    import { connect } from "react-redux";
+    import { loadImages } from "../actions/imageAction";
+    import getData from "../actions/treeAction";
+    import TreeListCreate from "../Components/TreeListCreate";
+    import dataset from "../Server/testData.json";
+    // import Image from 'react-image-file'
+    import Parser from 'binary-parser'
+    import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, ReferenceLine,
+      ReferenceDot, Tooltip, CartesianGrid, Legend, Brush, ErrorBar, AreaChart, Area,
+      Label, LabelList } from 'recharts';
+
+    class PictureContainer extends Component {
+      constructor(props){
+        super(props)
+        this.state = {
+          data: []
+        }
+      }
+      componentWillMount = () => {
+        if (this.props.loadImages()) {
+          this.props.loadImages();
+        }
+        this.props.getData(dataset);
+
+      }
+
+      componentDidMount = () => {
+        this.exec()
+      }
+
+      // componentWillUnmount() {
+      //   this.exec()
+      // }
+
+
+
+      // createDataTree = dataset => {
+      //   let hashTable = Object.create(null);
+      //   let children = [];
+      //   let arr = dataset.label;
+      //   children = [
+      //     ...children,
+      //     { name: dataset.IMEO_SE },
+      //     { name: dataset.LABEL_STATUS }
+      //   ];
+      //   arr.map(aData => {
+      //     hashTable[aData.name] = {
+      //       ...aData,
+      //       children: []
+      //     };
+      //   });
+
+      //   let dataTree = [];
+      //   let names = [];
+      //   let basename_levels = [];
+      //   let label = Object.create(null);
+      //   arr.map(data => {
+      //     names.push(data.name);
+      //     basename_levels.push(data.basename_level);
+      //     let flag = false;
+      //     for (var name in names) {
+      //       for (var basename_level in basename_levels) {
+      //         if (name === basename_level) {
+      //           flag = true;
+      //         } else {
+      //           flag = false;
+      //         }
+      //       }
+      //     }
+
+      //     if (flag && hashTable[data.basename_level] !== undefined) {
+      //       hashTable[data.basename_level].children.push(hashTable[data.name]);
+      //     } else {
+      //       dataTree.push(hashTable[data.name]);
+      //     }
+      //   });
+      //   let errorData = [];
+      //   errorData.push(dataset.error);
+
+      //   children = [...children, ...dataTree, dataset.error];
+      //   var goose = {
+      //     name: "react-treebeard",
+      //     toggled: false,
+      //     children
+      //   };
+      //   return goose;
+      // };
+
+      // toObject(arr) {
+      //   var rv = {};
+      //   for (var i = 0; i < arr.length; ++i) rv[i] = arr[i];
+      //   return rv;
+      // }
+
+      exec() {
+        let temp = []
+        let gas = []
+        let epoch = [1, 5, 2, 4, 6, 8, 12, 6, 7, 14, 20, 15, 19, 23, 18, 19, 29, 41, 23, 4]
+        let parts = this.split(epoch, 4)
+        let music = []
+        let data = []
+        for (let i = 0; i < parts.length; i++) {
+          if(i === 0) {
+            music = music.concat(this.full(temp, parts[i]))
+            for(let item in music) {
+              data.push(JSON.parse(`{"name": ${music[item]}, "age": ${item}}`))
+            }
+
+            this.setState({data})
+            console.log(data)
+            console.log("music", music)
+          } else {
+            setTimeout(() =>{
+              music = music.concat(this.full(temp, parts[i]))
+              for(let item in music) {
+                data.push(JSON.parse(`{"name": ${music[item]}, "age": ${20}}`))
+                console.log(JSON.parse(`{"name": ${music[item]}, "age": ${20}}`))
+              }
+              this.setState({...data,data})
+              console.log("music", music)
+            }, (i + i + 1) * 1000);
+          }
+
+        }
+      }
+
+      full = (arr, parts) => {
+        let all = []
+        arr = arr.concat(parts)
+        return arr
+      }
+
+      split(arr, n) {
+        var res = [];
+        while (arr.length) {
+          res.push(arr.splice(0, n));
+        }
+        return res;
+      }
+
+    //   sleep(milliseconds) {
+    //     var start = new Date().getTime();
+    //     for (var i = 0; i < 1e7; i++) {
+    //       if ((new Date().getTime() - start) > milliseconds){
+    //         break;
+    //       }
+    //     }
+    //   }
+
+    //   taken=(arr, src, i)=>{
+    // let kent =[]
+    //     // console.log("parts 1", src[i])
+    //     arr = arr.concat(src)
+    //     // arr = arr.concat(arr)
+    //     console.log("ans", arr)
+    //   }
+
+
+
+
+
+
+    const mapStateToProps = state => {
+      return {
+        images: state.imageReducer,
+        treeState: state.treeReducer
+      };
+    };
+
+    const mapDispatchToProps = dispatch => {
+      return {
+        loadImages: () => {
+          dispatch(loadImages());
+        },
+        getData: data => {
+          dispatch(getData(data));
+        }
+      };
+    };
+
+    export default connect(mapStateToProps, mapDispatchToProps)(PictureContainer);
+
+
+
+
     [
         {id: 1, title: 'hello', parent: 0},
         {id: 2, title: 'hello', parent: 0},
