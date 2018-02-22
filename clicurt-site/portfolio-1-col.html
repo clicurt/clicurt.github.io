@@ -4,6 +4,14 @@
 <head>
 <pre>
 
+https://stackoverflow.com/questions/34901593/how-to-filter-an-array-from-all-elements-of-another-array
+var arr = [1,2,3,4],
+brr = [2,4],
+res = arr.filter(f => !brr.includes(f));
+console.log(res);
+
+var filtered=[1,2,3,4].filter(function(e){return this.indexOf(e)<0;},[2,4]);
+
     import React, { Component } from "react";
     import "../index.css";
     import PictureBoard from "../Components/PictureBoard";
