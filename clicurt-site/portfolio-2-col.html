@@ -9,6 +9,446 @@
 <body>
 <pre>
 
+    import React from "react";
+    // import { render } from "react-dom";
+    import { makeData, Logo, Tips, dropData } from "./Utils";
+    import matchSorter from "match-sorter";
+    import { DropdownList } from "react-widgets";
+    import "react-widgets/dist/css/react-widgets.css";
+
+    // Import React Table
+    import ReactTable from "react-table";
+    import "react-table/react-table.css";
+    import { isContext } from "vm";
+
+    class TestTable extends React.Component {
+      constructor() {
+        super();
+        this.state = {
+          data: makeData(),
+          drop: dropData(),
+          allValues: "",
+          correctValue: "",
+          incorrectValue: "",
+          bullsValue: "",
+          decisionValue: "",
+          isFilter: false,
+          isAll: true,
+          isCorrect: false,
+          isIncorrect: false,
+          isBulls: false,
+          isDecision: false
+        };
+      }
+
+      componentDidMount = () => {
+        console.log("bullsValue", this.state.data);
+        this.handleAllRes(this.results.value);
+        // this.setState({isFilter: true})
+        // this.setState({ dropData });
+      };
+
+      componentWillReceiveProps = nextProps => {
+        const { drop } = this.state;
+      };
+
+      getTableData = () => {
+        const {
+          data,
+          drop,
+          isFilter,
+          isAll,
+          isCorrect,
+          isIncorrect,
+          isBulls,
+          isDecision,
+          bullsValue,
+          decisionValue
+        } = this.state;
+
+        let detailData = [];
+        data.map(item => {
+          console.log("is filter", isFilter);
+          if (isFilter) {
+            if (isAll) {
+              detailData = [...detailData, item];
+              // if (isBulls) {
+              //   detailData.map(sub => {
+              //     if (sub.firstName === bullsValue) {
+              //       detailData = detailData.filter(f =>
+              //         bullsValue.includes(f.firstName)
+              //       );
+              //     }
+              //     console.log("bullsValue", bullsValue);
+              //   });
+              //   detailData.map(sub => {
+              //     if (sub.firstName !== bullsValue && bullsValue !== "all") {
+              //       detailData = [];
+              //     }
+              //   });
+              // }
+              // if (isDecision) {
+              //   detailData.map(sub => {
+              //     if (sub.lastName === decisionValue) {
+              //       detailData = detailData.filter(f =>
+              //         decisionValue.includes(f.lastName)
+              //       );
+              //     }
+              //     console.log("decisionValue", decisionValue);
+              //   });
+              //   detailData.map(sub => {
+              //     if (sub.lastName !== decisionValue && decisionValue !== "all") {
+              //       detailData = [];
+              //     }
+              //   });
+              // }
+              detailData = this.handleSubFilter(
+                isBulls,
+                isDecision,
+                detailData,
+                bullsValue,
+                decisionValue
+              );
+            }
+            if (isCorrect) {
+              item.lastName.map((sub, ix) => {
+                if (ix === 0 && item.firstName === sub.cat) {
+                  detailData = [...detailData, item];
+                  // if (isBulls) {
+                  //   detailData.map(sub => {
+                  //     if (sub.firstName === bullsValue) {
+                  //       detailData = detailData.filter(f =>
+                  //         bullsValue.includes(f.firstName)
+                  //       );
+                  //     }
+                  //     console.log("bullsValue", bullsValue);
+                  //   });
+                  //   detailData.map(sub => {
+                  //     if (sub.firstName !== bullsValue && bullsValue !== "all") {
+                  //       detailData = [];
+                  //     }
+                  //   });
+                  // }
+                  // if (isDecision) {
+                  //   detailData.map(sub => {
+                  //     if (sub.lastName === decisionValue) {
+                  //       detailData = detailData.filter(f =>
+                  //         decisionValue.includes(f.lastName)
+                  //       );
+                  //     }
+                  //     console.log("decisionValue", decisionValue);
+                  //   });
+                  //   detailData.map(sub => {
+                  //     if (sub.lastName !== decisionValue && decisionValue !== "all") {
+                  //       detailData = [];
+                  //     }
+                  //   });
+                  // }
+                  detailData = this.handleSubFilter(
+                    isBulls,
+                    isDecision,
+                    detailData,
+                    bullsValue,
+                    decisionValue
+                  );
+                }
+              });
+            }
+            if (isIncorrect) {
+              item.lastName.map((sub, ix) => {
+                if (ix === 0 && item.firstName !== sub.cat) {
+                  // if (item.firstName !== item.lastName) {
+                  detailData = [...detailData, item];
+                  detailData = this.handleSubFilter(
+                    isBulls,
+                    isDecision,
+                    detailData,
+                    bullsValue,
+                    decisionValue
+                  );
+                }
+              });
+            }
+          } else {
+            detailData = [...detailData, item];
+          }
+        });
+
+        return detailData;
+      };
+
+      handleSubFilter = (
+        isBulls,
+        isDecision,
+        detailData,
+        bullsValue,
+        decisionValue
+      ) => {
+        if (isBulls) {
+          detailData.map(sub => {
+            if (sub.firstName === bullsValue) {
+              detailData = detailData.filter(f => bullsValue.includes(f.firstName));
+            }
+          });
+          detailData.map(sub => {
+            if (sub.firstName !== bullsValue && bullsValue !== "all") {
+              detailData = [];
+            }
+          });
+        }
+        if (isDecision) {
+          detailData.map(sub => {
+            sub.lastName.map((res, index) => {
+              if (index === 0) {
+                if (res.cat === decisionValue) {
+                  detailData = detailData.filter(f =>
+                    decisionValue.includes(f.lastName[index].cat)
+                  );
+                }
+              }
+            });
+          });
+          detailData.map(sub => {
+            sub.lastName.map((res, index) => {
+              if (index === 0) {
+                if (res.cat !== decisionValue && decisionValue !== "all") {
+                  detailData = [];
+                }
+              }
+            });
+          });
+        }
+        return detailData;
+      };
+
+      onChange = value => {
+        console.log("select", value);
+      };
+
+      handleAllRes = e => {
+        if (typeof e === "object") {
+          this.setState({ allValues: e.target.value });
+          this.setState({ isFilter: false });
+          this.setState({ isAll: true });
+          this.setState({ isCorrect: false });
+          this.setState({ isIncorrect: false });
+          console.log(e.target.value);
+        } else {
+          this.setState({ allValues: e });
+          this.setState({ isFilter: false });
+          this.setState({ isAll: true });
+          this.setState({ isCorrect: false });
+          this.setState({ isIncorrect: false });
+          console.log(e);
+        }
+        console.log(this.state.allValues);
+      };
+
+      handleCorrectRes = e => {
+        this.setState({ correctValue: e.target.value });
+        this.setState({ isFilter: false });
+        this.setState({ isCorrect: true });
+        this.setState({ isAll: false });
+        this.setState({ isIncorrect: false });
+        console.log(e.target.value);
+      };
+
+      handleIncorrectRes = e => {
+        this.setState({ incorrectValue: e.target.value });
+        this.setState({ isFilter: false });
+        this.setState({ isIncorrect: true });
+        this.setState({ isCorrect: false });
+        this.setState({ isAll: false });
+        console.log(e.target.value);
+      };
+
+      handleBulls = value => {
+        this.setState({ bullsValue: value });
+        this.setState({ isBulls: true });
+        // this.setState({ isCorrect: false });
+        this.setState({ isFilter: false });
+        // this.setState({ isAll: false });
+        console.log("bulls", value);
+      };
+
+      handleDecision = value => {
+        this.setState({ decisionValue: value });
+        this.setState({ isDecision: true });
+        this.setState({ isFilter: false });
+        // this.setState({ isCorrect: false });
+        // this.setState({ isAll: false });
+        console.log("decide", value);
+      };
+
+      handleFilter = e => {
+        this.setState({ isFilter: true });
+        console.log(this.state.isFilter);
+      };
+      render() {
+        const { drop, all } = this.state;
+
+        console.log("from func", this.getTableData());
+        return (
+          <div>
+            <form action="">
+              <input
+                ref={refId => {
+                  this.results = refId;
+                }}
+                type="radio"
+                name="results"
+                value="all"
+                onClick={e => this.handleAllRes(e)}
+                defaultChecked
+              />
+              All<br />
+              <input
+                type="radio"
+                name="results"
+                value="correct"
+                onClick={e => this.handleCorrectRes(e)}
+              />
+              correct<br />
+              <input
+                type="radio"
+                name="results"
+                value="incorrect"
+                onClick={e => this.handleIncorrectRes(e)}
+              />
+              Incorrect
+            </form>
+            <DropdownList
+              ref={refId => {
+                this.bulls = refId;
+              }}
+              data={drop.cat}
+              defaultValue="all"
+              // onSelect={value => this.handleBulls(value)}
+              onChange={value => this.handleBulls(value)}
+              style={{
+                width: 150 + "px",
+                marginLeft: 100 + "px",
+                marginRight: 20 + "px",
+                display: "inline-block"
+              }}
+            />
+
+            <DropdownList
+              ref={refId => {
+                this.decision = refId;
+              }}
+              data={drop.cat}
+              defaultValue="all"
+              onChange={value => this.handleDecision(value)}
+              style={{
+                width: 150 + "px",
+                display: "inline-block",
+                marginRight: 20 + "px"
+              }}
+            />
+
+            <button onClick={() => this.handleFilter()}>filter</button>
+            <ReactTable
+              data={this.getTableData()}
+              defaultFilterMethod={(filter, row) =>
+                String(row[filter.id]) === filter.value
+              }
+              columns={[
+                {
+                  Header: "Name",
+                  columns: [
+                    {
+                      Header: "First Name",
+                      accessor: "firstName",
+                      filterMethod: (filter, row) =>
+                        row[filter.id].startsWith(filter.value) &&
+                        row[filter.id].endsWith(filter.value)
+                    },
+                    {
+                      Header: "Last Name",
+                      id: "lastName",
+                      accessor: d =>
+                        d.lastName.map((res, index) => {
+                          if (index === 0) return res.cat;
+                        })
+                      // Cell: row=>{
+                      //   row.map(res=>
+                      //   <td>{res.cat}</td>)
+                      // }
+                      // You can even render the cell differently if it's an aggregated cell
+                      // return <span>row.value (avg)</span>
+                    }
+                    // filterMethod: (filter, rows) =>
+                    //   matchSorter(rows, filter.value, {
+                    //     keys: ["lastName"]
+                    //   }),
+                    // filterAll: true
+                    // }
+                  ]
+                },
+                {
+                  Header: "Info",
+                  columns: [
+                    {
+                      Header: "Age",
+                      accessor: "age"
+                    },
+                    {
+                      Header: "Over 21",
+                      accessor: "age",
+                      id: "over",
+                      Cell: ({ value }) => (value >= 21 ? "Yes" : "No"),
+                      filterMethod: (filter, row) => {
+                        if (filter.value === "all") {
+                          return true;
+                        }
+                        if (filter.value === "true") {
+                          return row[filter.id] >= 21;
+                        }
+                        return row[filter.id] < 21;
+                      },
+                      Filter: ({ filter, onChange }) => (
+                        <select
+                          onChange={event => onChange(event.target.value)}
+                          style={{ width: "100%" }}
+                          value={filter ? filter.value : "all"}
+                        >
+                          <option value="all">Show All</option>
+                          <option value="true">Can Drink</option>
+                          <option value="false">Can't Drink</option>
+                        </select>
+                      )
+                    }
+                  ]
+                }
+              ]}
+              defaultPageSize={10}
+              className="-striped -highlight"
+            />
+            <br />
+          </div>
+        );
+      }
+    }
+
+    export default TestTable;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    **********************************************************************
+
     exec() {
         let temp = []
         let gas = []
