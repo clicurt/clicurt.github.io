@@ -44,8 +44,6 @@
       componentDidMount = () => {
         console.log("bullsValue", this.state.data);
         this.handleAllRes(this.results.value);
-        // this.setState({isFilter: true})
-        // this.setState({ dropData });
       };
 
       componentWillReceiveProps = nextProps => {
@@ -72,36 +70,6 @@
           if (isFilter) {
             if (isAll) {
               detailData = [...detailData, item];
-              // if (isBulls) {
-              //   detailData.map(sub => {
-              //     if (sub.firstName === bullsValue) {
-              //       detailData = detailData.filter(f =>
-              //         bullsValue.includes(f.firstName)
-              //       );
-              //     }
-              //     console.log("bullsValue", bullsValue);
-              //   });
-              //   detailData.map(sub => {
-              //     if (sub.firstName !== bullsValue && bullsValue !== "all") {
-              //       detailData = [];
-              //     }
-              //   });
-              // }
-              // if (isDecision) {
-              //   detailData.map(sub => {
-              //     if (sub.lastName === decisionValue) {
-              //       detailData = detailData.filter(f =>
-              //         decisionValue.includes(f.lastName)
-              //       );
-              //     }
-              //     console.log("decisionValue", decisionValue);
-              //   });
-              //   detailData.map(sub => {
-              //     if (sub.lastName !== decisionValue && decisionValue !== "all") {
-              //       detailData = [];
-              //     }
-              //   });
-              // }
               detailData = this.handleSubFilter(
                 isBulls,
                 isDecision,
@@ -114,36 +82,6 @@
               item.lastName.map((sub, ix) => {
                 if (ix === 0 && item.firstName === sub.cat) {
                   detailData = [...detailData, item];
-                  // if (isBulls) {
-                  //   detailData.map(sub => {
-                  //     if (sub.firstName === bullsValue) {
-                  //       detailData = detailData.filter(f =>
-                  //         bullsValue.includes(f.firstName)
-                  //       );
-                  //     }
-                  //     console.log("bullsValue", bullsValue);
-                  //   });
-                  //   detailData.map(sub => {
-                  //     if (sub.firstName !== bullsValue && bullsValue !== "all") {
-                  //       detailData = [];
-                  //     }
-                  //   });
-                  // }
-                  // if (isDecision) {
-                  //   detailData.map(sub => {
-                  //     if (sub.lastName === decisionValue) {
-                  //       detailData = detailData.filter(f =>
-                  //         decisionValue.includes(f.lastName)
-                  //       );
-                  //     }
-                  //     console.log("decisionValue", decisionValue);
-                  //   });
-                  //   detailData.map(sub => {
-                  //     if (sub.lastName !== decisionValue && decisionValue !== "all") {
-                  //       detailData = [];
-                  //     }
-                  //   });
-                  // }
                   detailData = this.handleSubFilter(
                     isBulls,
                     isDecision,
@@ -157,7 +95,6 @@
             if (isIncorrect) {
               item.lastName.map((sub, ix) => {
                 if (ix === 0 && item.firstName !== sub.cat) {
-                  // if (item.firstName !== item.lastName) {
                   detailData = [...detailData, item];
                   detailData = this.handleSubFilter(
                     isBulls,
