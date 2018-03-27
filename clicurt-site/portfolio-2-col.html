@@ -9,6 +9,506 @@
 <body>
 <pre>
 
+
+
+
+    import React from "react";
+    // import { render } from "react-dom";
+    import { makeData, Logo, Tips, dropData } from "./Utils";
+    import matchSorter from "match-sorter";
+    import { DropdownList } from "react-widgets";
+    import "react-widgets/dist/css/react-widgets.css";
+    import v4 from "uuid";
+
+    // Import React Table
+    import ReactTable from "react-table";
+    import "react-table/react-table.css";
+    import { isContext } from "vm";
+
+    class TestTable extends React.Component {
+      constructor() {
+        super();
+        this.state = {
+          data: makeData(),
+          drop: dropData(),
+          allValues: "",
+          correctValue: "",
+          incorrectValue: "",
+          bullsValue: "",
+          decisionValue: "",
+          isFilter: false,
+          isAll: true,
+          isCorrect: false,
+          isIncorrect: false,
+          isBulls: false,
+          isDecision: false,
+          // selected: false,
+          trial: []
+        };
+      }
+
+      componentDidMount = () => {
+        console.log("bullsValue", this.state.data);
+        this.handleAllRes(this.results.value);
+        this.getObj();
+        // this.setState({isFilter: true})
+        // this.setState({ dropData });
+      };
+
+      componentWillReceiveProps = nextProps => {
+        const { drop } = this.state;
+      };
+
+      getTableData = () => {
+        const {
+          data,
+          drop,
+          isFilter,
+          isAll,
+          isCorrect,
+          isIncorrect,
+          isBulls,
+          isDecision,
+          bullsValue,
+          decisionValue
+        } = this.state;
+
+        let detailData = [];
+        data.map(item => {
+          console.log("is filter", isFilter);
+          if (isFilter) {
+            if (isAll) {
+              console.log(item);
+              detailData = [...detailData, item];
+              // if (isBulls) {
+              //   detailData.map(sub => {
+              //     if (sub.firstName === bullsValue) {
+              //       detailData = detailData.filter(f =>
+              //         bullsValue.includes(f.firstName)
+              //       );
+              //     }
+              //     console.log("bullsValue", bullsValue);
+              //   });
+              //   detailData.map(sub => {
+              //     if (sub.firstName !== bullsValue && bullsValue !== "all") {
+              //       detailData = [];
+              //     }
+              //   });
+              // }
+              // if (isDecision) {
+              //   detailData.map(sub => {
+              //     if (sub.lastName === decisionValue) {
+              //       detailData = detailData.filter(f =>
+              //         decisionValue.includes(f.lastName)
+              //       );
+              //     }
+              //     console.log("decisionValue", decisionValue);
+              //   });
+              //   detailData.map(sub => {
+              //     if (sub.lastName !== decisionValue && decisionValue !== "all") {
+              //       detailData = [];
+              //     }
+              //   });
+              // }
+              detailData = this.handleSubFilter(
+                isBulls,
+                isDecision,
+                detailData,
+                bullsValue,
+                decisionValue
+              );
+            }
+            if (isCorrect) {
+              item.lastName.map((sub, ix) => {
+                if (ix === 0 && item.firstName === sub.cat) {
+                  detailData = [...detailData, item];
+                  // if (isBulls) {
+                  //   detailData.map(sub => {
+                  //     if (sub.firstName === bullsValue) {
+                  //       detailData = detailData.filter(f =>
+                  //         bullsValue.includes(f.firstName)
+                  //       );
+                  //     }
+                  //     console.log("bullsValue", bullsValue);
+                  //   });
+                  //   detailData.map(sub => {
+                  //     if (sub.firstName !== bullsValue && bullsValue !== "all") {
+                  //       detailData = [];
+                  //     }
+                  //   });
+                  // }
+                  // if (isDecision) {
+                  //   detailData.map(sub => {
+                  //     if (sub.lastName === decisionValue) {
+                  //       detailData = detailData.filter(f =>
+                  //         decisionValue.includes(f.lastName)
+                  //       );
+                  //     }
+                  //     console.log("decisionValue", decisionValue);
+                  //   });
+                  //   detailData.map(sub => {
+                  //     if (sub.lastName !== decisionValue && decisionValue !== "all") {
+                  //       detailData = [];
+                  //     }
+                  //   });
+                  // }
+                  detailData = this.handleSubFilter(
+                    isBulls,
+                    isDecision,
+                    detailData,
+                    bullsValue,
+                    decisionValue
+                  );
+                }
+              });
+            }
+            if (isIncorrect) {
+              item.lastName.map((sub, ix) => {
+                if (ix === 0 && item.firstName !== sub.cat) {
+                  // if (item.firstName !== item.lastName) {
+                  detailData = [...detailData, item];
+                  detailData = this.handleSubFilter(
+                    isBulls,
+                    isDecision,
+                    detailData,
+                    bullsValue,
+                    decisionValue
+                  );
+                }
+              });
+            }
+          } else {
+            detailData = [...detailData, item];
+          }
+        });
+
+        return detailData;
+      };
+
+      handleSubFilter = (
+        isBulls,
+        isDecision,
+        detailData,
+        bullsValue,
+        decisionValue
+      ) => {
+        if (isBulls) {
+          detailData.map(sub => {
+            if (sub.firstName === bullsValue) {
+              detailData = detailData.filter(f => bullsValue.includes(f.firstName));
+            }
+          });
+          detailData.map(sub => {
+            if (sub.firstName !== bullsValue && bullsValue !== "all") {
+              detailData = [];
+            }
+          });
+        }
+        if (isDecision) {
+          detailData.map(sub => {
+            sub.lastName.map((res, index) => {
+              if (index === 0) {
+                if (res.cat === decisionValue) {
+                  detailData = detailData.filter(f =>
+                    decisionValue.includes(f.lastName[index].cat)
+                  );
+                }
+              }
+            });
+          });
+          detailData.map(sub => {
+            sub.lastName.map((res, index) => {
+              if (index === 0) {
+                if (res.cat !== decisionValue && decisionValue !== "all") {
+                  detailData = [];
+                }
+              }
+            });
+          });
+        }
+        return detailData;
+      };
+
+      onChange = value => {
+        console.log("select", value);
+      };
+
+      handleAllRes = e => {
+        if (typeof e === "object") {
+          this.setState({ allValues: e.target.value });
+          this.setState({ isFilter: false });
+          this.setState({ isAll: true });
+          this.setState({ isCorrect: false });
+          this.setState({ isIncorrect: false });
+          console.log(e.target.value);
+        } else {
+          this.setState({ allValues: e });
+          this.setState({ isFilter: false });
+          this.setState({ isAll: true });
+          this.setState({ isCorrect: false });
+          this.setState({ isIncorrect: false });
+          console.log(e);
+        }
+        console.log(this.state.allValues);
+      };
+
+      handleCorrectRes = e => {
+        this.setState({ correctValue: e.target.value });
+        this.setState({ isFilter: false });
+        this.setState({ isCorrect: true });
+        this.setState({ isAll: false });
+        this.setState({ isIncorrect: false });
+        console.log(e.target.value);
+      };
+
+      handleIncorrectRes = e => {
+        this.setState({ incorrectValue: e.target.value });
+        this.setState({ isFilter: false });
+        this.setState({ isIncorrect: true });
+        this.setState({ isCorrect: false });
+        this.setState({ isAll: false });
+        console.log(e.target.value);
+      };
+
+      handleBulls = value => {
+        this.setState({ bullsValue: value });
+        this.setState({ isBulls: true });
+        // this.setState({ isCorrect: false });
+        this.setState({ isFilter: false });
+        // this.setState({ isAll: false });
+        console.log("bulls", value);
+      };
+
+      handleDecision = value => {
+        this.setState({ decisionValue: value });
+        this.setState({ isDecision: true });
+        this.setState({ isFilter: false });
+        // this.setState({ isCorrect: false });
+        // this.setState({ isAll: false });
+        console.log("decide", value);
+      };
+
+      handleFilter = e => {
+        this.setState({ isFilter: true });
+        console.log(this.state.isFilter);
+      };
+      getObj = () => {
+        let mainBody = {};
+        let array = [];
+        for (let index = 0; index < 5; index++) {
+          let obj = {
+            name: `name_${index}`,
+            value: `New${index}`
+          };
+          array.push(obj);
+        }
+        mainBody.id = "file";
+        mainBody.value = "File";
+        mainBody.popup = {};
+        mainBody.popup.menuItem = array;
+        console.log("mainBody", mainBody);
+        return mainBody;
+      };
+      render() {
+        const { drop, all, trial, selected } = this.state;
+
+        {
+          console.log("trial", selected);
+        }
+        return (
+          <div>
+            <label htmlFor="all">
+              <input
+                ref={refId => {
+                  this.results = refId;
+                }}
+                type="radio"
+                name="results"
+                id="all"
+                value="all"
+                onClick={e => this.handleAllRes(e)}
+                defaultChecked
+              />
+              All
+            </label>
+            <br />
+            <label htmlFor="correct">
+              <input
+                type="radio"
+                name="results"
+                id="correct"
+                value="correct"
+                onClick={e => this.handleCorrectRes(e)}
+              />
+              correct
+            </label>
+            <br />
+            <label htmlFor="incorrect">
+              <input
+                type="radio"
+                name="results"
+                id="incorrect"
+                value="incorrect"
+                onClick={e => this.handleIncorrectRes(e)}
+              />
+              Incorrect
+            </label>
+            <DropdownList
+              ref={refId => {
+                this.bulls = refId;
+              }}
+              data={drop.cat}
+              defaultValue="all"
+              onSelect={value => this.handleBulls(value)}
+              onChange={value => this.handleBulls(value)}
+              style={{
+                width: 150 + "px",
+                marginLeft: 100 + "px",
+                marginRight: 20 + "px",
+                display: "inline-block"
+              }}
+            />
+
+            <DropdownList
+              ref={refId => {
+                this.decision = refId;
+              }}
+              data={drop.cat}
+              defaultValue="all"
+              onChange={value => this.handleDecision(value)}
+              style={{
+                width: 150 + "px",
+                display: "inline-block",
+                marginRight: 20 + "px"
+              }}
+            />
+
+            <button onClick={() => this.handleFilter()}>filter</button>
+            <ReactTable
+              data={this.getTableData()}
+              columns={[
+                {
+                  Header: "Name",
+                  columns: [
+                    {
+                      Header: "First Name",
+                      accessor: "firstName",
+                      filterMethod: (filter, row) =>
+                        row[filter.id].startsWith(filter.value) &&
+                        row[filter.id].endsWith(filter.value)
+                    },
+                    {
+                      Header: "Last Name",
+                      id: "lastName",
+                      accessor: d => d.lastName,
+                      // d.lastName.map((res, index) => {
+                      //   if (index === 0) return res.cat;
+                      // }),
+                      Cell: row => (
+                        <div>
+                          <span
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              backgroundColor: "red",
+                              borderRadius: "2px"
+                            }}
+                          >
+                            &nbsp;
+                          </span>
+                          {row.value.map((res, index) => index === 0 && res.cat)}
+                        </div>
+                      )
+                    }
+                  ]
+                },
+                {
+                  Header: "Info",
+                  columns: [
+                    {
+                      Header: "Age",
+                      id: "lastName2",
+                      accessor: d => d.lastName,
+                      Cell: row =>
+                        row.value.map(
+                          (res, ix) =>
+                            ix !== 0 && (
+                              <li style={{ listStyleType: "none" }} key={v4()}><a href="#" >{`${
+                                res.cat
+                              } ${res.precision}`}</a></li>
+                            )
+                        )
+
+                      // <ul>
+                      //   {row.value.map(
+                      //     (res, ix) =>
+                      //       ix !== 0 && (
+                      //         <li key={v4()}>
+                      //           {`${res.cat} ${res.precision}`}
+                      //         </li>
+                      //       )
+                      //   )}
+                      // </ul>
+                    },
+                    {
+                      Header: "Over 21",
+                      accessor: "age",
+                      id: "over",
+                      Cell: ({ value }) => (value >= 21 ? "Yes" : "No")
+                    }
+                  ]
+                }
+              ]}
+              defaultPageSize={10}
+              className="-striped -highlight"
+              getTrProps={(state, rowInfo, instance) => {
+                if (rowInfo) {
+                  return {
+                    onClick: e => {
+                      this.setState({
+                        selected: rowInfo.index,
+                        trial: rowInfo.original
+                      });
+                    },
+                    style: {
+                      background: rowInfo.index === selected ? "#00afec" : "white",
+                      color: rowInfo.index === selected ? "white" : "black"
+                    }
+                  };
+                }
+                return {};
+              }}
+              // getTrProps={(state, rowInfo) => {
+              //   return {
+              // onClick: e => {
+              //   this.setState({
+              //     selected: rowInfo.index
+              //   });
+              // },
+              //     style: {
+              //       background:
+              //         rowInfo.index === this.state.selected ? "#00afec" : "white",
+              //       color: rowInfo.index === this.state.selected ? "white" : "black"
+              //     }
+              //   };
+              // }}
+            />
+            <br />
+          </div>
+        );
+      }
+    }
+
+    export default TestTable;
+
+
+
+
+
+
+
+
+
     import React from "react";
     // import { render } from "react-dom";
     import { makeData, Logo, Tips, dropData } from "./Utils";
