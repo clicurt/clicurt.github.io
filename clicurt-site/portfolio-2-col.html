@@ -9,7 +9,27 @@
 <body>
 <pre>
 
+    import java.util.*;
+    import java.util.stream.Collectors;
 
+    public class MyClass {
+        public static void main(String args[]) {
+            List<String> str1 = new ArrayList<>();
+            List<String> toRemove = new ArrayList<>();
+            str1.add("A");
+            str1.add("B");
+            str1.add("C");
+            str1.add("D");
+            System.out.println("Sum of x+y = " + str1);
+            for(String list: str1) {
+                toRemove.add(list);
+                System.out.println("inside = " + str1.stream().filter(b -> toRemove.contains(b)).collect(Collectors.toList()));
+                System.out.println("to Remove = " + toRemove);
+            }
+            str1.removeAll(toRemove);
+            System.out.println("outside = " + str1);
+        }
+    }
 
 
     import React from "react";
