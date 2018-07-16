@@ -9,6 +9,161 @@
 <body>
 <pre>
 
+
+  import java.io.BufferedReader;
+  import java.io.FileReader;
+  import java.io.IOException;
+  import java.util.ArrayList;
+  import java.util.Collections;
+  import java.util.HashMap;
+  import java.util.List;
+  import java.util.Map;
+  import java.util.Map.Entry;
+  import java.util.TreeMap;
+
+  public class FileArrTest {
+
+      private static HashMap<String, HashMap<String, Double>> fileMap = new HashMap<>();
+
+      public static void getLine(String line) {
+          String[] sLine = line.split(",");
+          String filename = sLine[1];
+          HashMap<String, Double> catLine = new HashMap<>();
+
+          // String maxV = "";
+          for (int i = 5; i < sLine.length; i += 2) {
+              catLine.put(sLine[i], Double.valueOf(sLine[i + 1]));
+              // if (fileMap.get(filename) == null) {
+              //
+              // fileMap.put(filename, catLine);
+              // }
+          }
+          // System.out.println(catLine);
+          Map<String, Double> treeMap = new TreeMap<>(catLine);
+          printMap(treeMap);
+          Double maxValueInMap = (Collections.max(treeMap.values()));
+  //        System.out.println(maxValueInMap);
+          for (Entry<String, Double> entry : treeMap.entrySet()) {
+              if (treeMap.containsKey(entry.getKey())) {
+  //                if (entry.getValue() == maxValueInMap) {
+                      // System.out.println(entry.getValue()); // Print the key
+                      // with max value
+                      System.out.println("key " + entry.getKey() + " value " + entry.getValue());
+  //                }
+              }
+          }
+          // treeMap.entrySet().stream().max((entry1, entry2) -> entry1.getValue()
+          // > entry2.getValue() ? 1 : -1).get().getKey();
+  //        System.out.println(treeMap);
+          for (Map.Entry<String, HashMap<String, Double>> main : fileMap.entrySet()) {
+              for (Map.Entry<String, Double> entry : catLine.entrySet()) {
+                  // if(entry.getValue() > catLine.get(sLine[i])) {
+                  // System.out.println("catline =>"+catLine);
+                  // }
+                  System.out.println("key " + entry.getKey() + " value " + entry.getValue());
+                  fileMap.put(filename, catLine);
+              }
+              // System.out.println(fileMap);
+              // System.out.println("Filename "+catLine);
+
+          }
+          getRetLine();
+
+      }
+
+      // pretty print a map
+      public static <K, V> void printMap(Map<K, V> map) {
+          Map.Entry<K, V> maxEntry = null;
+
+          // for (Map.Entry<K, V> entry : map.entrySet()) {
+          // if (maxEntry == null || ((Double)
+          // entry.getValue()).compareTo((Double) maxEntry.getValue()) > 0)
+          // {
+          // maxEntry = entry;
+          // }
+          //// System.out.println(map);
+          // System.out.println(maxEntry);
+          // }
+      }
+
+      private static void getRetLine() {
+          String tmp = "";
+          Double maxValue = null;
+
+          for (Map.Entry<String, HashMap<String, Double>> entry : fileMap.entrySet()) {
+              tmp += entry.getKey() + ", ";
+              Map<String, Double> cats = entry.getValue();
+              for (Map.Entry<String, Double> row : (entry.getValue()).entrySet()) {
+                  System.out.println("Rows => " + row);
+                  if (maxValue == null || maxValue.equals(entry.getValue())) {
+                      maxValue = row.getValue();
+                      tmp += row.getKey() + "=" + maxValue;
+                  }
+                  else if (row.getValue() > maxValue) {
+                      maxValue = row.getValue();
+                      // tmp += ;
+  //                    System.out.println(tmp);
+                  }
+
+              }
+          }
+          // System.out.println(tmp);
+      }
+
+      public static void main(String[] args) {
+          // TODO Auto-generated method stub
+          String csvFile = "C:/tmp/data.csv";
+          String line = "";
+          String cvsSplitBy = ",";
+          List<String> lines = new ArrayList<>();
+          try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
+              while ((line = br.readLine()) != null) {
+                  lines.add(line);
+                  // use comma as separator
+                  // String[] country = line.split(cvsSplitBy);
+                  // System.out.println(country[6]);
+              }
+
+          }
+          catch (IOException e) {
+              e.printStackTrace();
+          }
+
+          for (String ls : lines) {
+              getLine(ls);
+          }
+      }
+
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  git
+
     import java.util.*;
     import java.util.stream.Collectors;
 
