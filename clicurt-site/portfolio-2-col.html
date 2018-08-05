@@ -9,6 +9,117 @@
 <body>
 <pre>
 
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import LoginForm from "../forms/LoginForm";
+import { login } from "../../actions/auth";
+
+let db;
+// let os;
+class LoginPage extends Component {
+  componentDidMount = () => {
+    
+    const request = indexedDB.open("customermanager", 1);
+
+    request.onupgradeneeded = () => {
+      console.log("upgrade: updating...")
+      db = request.result;
+      if (!db.objectStoreNames.contains("customers")) {
+        const os = db.createObjectStore("customers", {keyPath: "id", autoIncrement: true});
+        // create index for name
+        os.createIndex("name", "name", {unique: false});
+      }      
+    }
+
+    request.onerror = () => {
+      console.log("Error: could not open Database...")
+    }
+
+    // success
+    request.onsuccess = () => {
+      console.log("success: Opened Database...")
+      db = request.result;
+      // show customers
+      this.showCustomers();
+    }
+  } 
+
+  addCustomer = () => {
+    const name = "blow";
+    const email = "blow@mail.com";
+
+    const tx = db.transaction(["customers"], "readwrite");
+    // Ask for object store
+    const store = tx.objectStore("customers");
+
+    // Define customer
+    const customer = {
+      name,
+      email
+    }
+
+    // Perform the add
+    const request = store.add(customer);
+    // success
+    request.onsuccess = () => {
+      window.location.href="/";
+      
+    }
+    request.onerror = () => {
+      console.log("Error:", request.error.name);
+
+    }
+  }
+  
+  
+  submit = data => 
+    this.props.login(data).then(() => this.props.history.push("/"));
+
+  // Display customers  
+  showCustomers = () => {
+    const tx = db.transaction(["customers"], "readonly");
+    // Ask for object store
+    const store = tx.objectStore("customers");
+    const index = store.index("name");
+    let output = "";
+    index.openCursor().onsuccess = (e) => {
+      const cursor = e.target.result;
+      if (cursor) {
+        output += `id : ${cursor.value.id} <br/>`;
+        output += `name : ${cursor.value.name} <br/>`;
+        output += `email : ${cursor.value.email} <br/>`;
+        cursor.continue();
+      }
+      console.log("Output", output, cursor);
+
+    }
+  }
+
+  render() {
+    console.log(this.props)
+    return (
+      <div>
+        <h1>Login Page</h1>
+        <LoginForm submit={this.submit} />
+        <button onClick={()=> this.addCustomer()}> Add customer </button>
+      </div>
+    );
+  }
+}
+
+LoginPage.propTypes = {
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired
+  }).isRequired,
+  login: PropTypes.func.isRequired
+};
+
+export default connect(null, { login })(LoginPage);
+
+
+
+
 
   import java.io.BufferedReader;
   import java.io.FileReader;
