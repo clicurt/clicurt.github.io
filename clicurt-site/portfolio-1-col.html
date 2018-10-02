@@ -2,6 +2,1819 @@
 <html lang="en">
 
 <head>
+<pre>
+
+
+    import React from "react";
+    // import { render } from "react-dom";
+    import { makeData, Logo, Tips, dropData } from "./Utils";
+    import matchSorter from "match-sorter";
+    import { DropdownList } from "react-widgets";
+    import "react-widgets/dist/css/react-widgets.css";
+
+    // Import React Table
+    import ReactTable from "react-table";
+    import "react-table/react-table.css";
+    import { isContext } from "vm";
+
+    class TestTable extends React.Component {
+      constructor() {
+        super();
+        this.state = {
+          data: makeData(),
+          drop: dropData(),
+          allValues: "",
+          correctValue: "",
+          incorrectValue: "",
+          bullsValue: "",
+          decisionValue: "",
+          isFilter: false,
+          isAll: true,
+          isCorrect: false,
+          isIncorrect: false,
+          isBulls: false,
+          isDecision: false
+        };
+      }
+
+      componentDidMount = () => {
+        this.handleAllRes(this.results.value);
+        // this.setState({isFilter: true})
+        // this.setState({ dropData });
+      };
+
+      componentWillReceiveProps = nextProps => {
+        const { drop } = this.state;
+      };
+
+      getTableData = () => {
+        const {
+          data,
+          drop,
+          isFilter,
+          isAll,
+          isCorrect,
+          isIncorrect,
+          isBulls,
+          isDecision,
+          bullsValue,
+          decisionValue
+        } = this.state;
+
+        let detailData = [];
+        data.map(item => {
+          console.log("is filter", isFilter)
+          if (isFilter) {
+            if (isAll) {
+              detailData = [...detailData, item];
+              // if (isBulls) {
+              //   detailData.map(sub => {
+              //     if (sub.firstName === bullsValue) {
+              //       detailData = detailData.filter(f =>
+              //         bullsValue.includes(f.firstName)
+              //       );
+              //     }
+              //     console.log("bullsValue", bullsValue);
+              //   });
+              //   detailData.map(sub => {
+              //     if (sub.firstName !== bullsValue && bullsValue !== "all") {
+              //       detailData = [];
+              //     }
+              //   });
+              // }
+              // if (isDecision) {
+              //   detailData.map(sub => {
+              //     if (sub.lastName === decisionValue) {
+              //       detailData = detailData.filter(f =>
+              //         decisionValue.includes(f.lastName)
+              //       );
+              //     }
+              //     console.log("decisionValue", decisionValue);
+              //   });
+              //   detailData.map(sub => {
+              //     if (sub.lastName !== decisionValue && decisionValue !== "all") {
+              //       detailData = [];
+              //     }
+              //   });
+              // }
+              detailData = this.handleSubFilter(
+                isBulls,
+                isDecision,
+                detailData,
+                bullsValue,
+                decisionValue
+              );
+            }
+            if (isCorrect) {
+              if (item.firstName === item.lastName) {
+                detailData = [...detailData, item];
+                // if (isBulls) {
+                //   detailData.map(sub => {
+                //     if (sub.firstName === bullsValue) {
+                //       detailData = detailData.filter(f =>
+                //         bullsValue.includes(f.firstName)
+                //       );
+                //     }
+                //     console.log("bullsValue", bullsValue);
+                //   });
+                //   detailData.map(sub => {
+                //     if (sub.firstName !== bullsValue && bullsValue !== "all") {
+                //       detailData = [];
+                //     }
+                //   });
+                // }
+                // if (isDecision) {
+                //   detailData.map(sub => {
+                //     if (sub.lastName === decisionValue) {
+                //       detailData = detailData.filter(f =>
+                //         decisionValue.includes(f.lastName)
+                //       );
+                //     }
+                //     console.log("decisionValue", decisionValue);
+                //   });
+                //   detailData.map(sub => {
+                //     if (sub.lastName !== decisionValue && decisionValue !== "all") {
+                //       detailData = [];
+                //     }
+                //   });
+                // }
+                detailData = this.handleSubFilter(
+                  isBulls,
+                  isDecision,
+                  detailData,
+                  bullsValue,
+                  decisionValue
+                );
+              }
+            }
+            if (isIncorrect) {
+              if (item.firstName !== item.lastName) {
+                detailData = [...detailData, item];
+                detailData = this.handleSubFilter(
+                  isBulls,
+                  isDecision,
+                  detailData,
+                  bullsValue,
+                  decisionValue
+                );
+              }
+            }
+          } else {
+            detailData = [...detailData, item];
+          }
+        });
+
+        return detailData;
+      };
+
+      handleSubFilter = (
+        isBulls,
+        isDecision,
+        detailData,
+        bullsValue,
+        decisionValue
+      ) => {
+        if (isBulls) {
+          detailData.map(sub => {
+            if (sub.firstName === bullsValue) {
+              detailData = detailData.filter(f => bullsValue.includes(f.firstName));
+            }
+            console.log("bullsValue", bullsValue);
+          });
+          detailData.map(sub => {
+            if (sub.firstName !== bullsValue && bullsValue !== "all") {
+              detailData = [];
+            }
+          });
+        }
+        if (isDecision) {
+          detailData.map(sub => {
+            if (sub.lastName === decisionValue) {
+              detailData = detailData.filter(f =>
+                decisionValue.includes(f.lastName)
+              );
+            }
+            console.log("decisionValue", decisionValue);
+          });
+          detailData.map(sub => {
+            if (sub.lastName !== decisionValue && decisionValue !== "all") {
+              detailData = [];
+            }
+          });
+        }
+        return detailData;
+      };
+
+      onChange = value => {
+        console.log("select", value);
+      };
+
+      handleAllRes = e => {
+        if (typeof e === "object") {
+          this.setState({ allValues: e.target.value });
+          this.setState({ isFilter: false });
+          this.setState({ isAll: true });
+          this.setState({ isCorrect: false });
+          this.setState({ isIncorrect: false });
+          console.log(e.target.value);
+        } else {
+          this.setState({ allValues: e });
+          this.setState({ isFilter: false });
+          this.setState({ isAll: true });
+          this.setState({ isCorrect: false });
+          this.setState({ isIncorrect: false });
+          console.log(e);
+        }
+        console.log(this.state.allValues);
+      };
+
+      handleCorrectRes = e => {
+        this.setState({ correctValue: e.target.value });
+        this.setState({ isFilter: false });
+        this.setState({ isCorrect: true });
+        this.setState({ isAll: false });
+        this.setState({ isIncorrect: false });
+        console.log(e.target.value);
+      };
+
+      handleIncorrectRes = e => {
+        this.setState({ incorrectValue: e.target.value });
+        this.setState({ isFilter: false });
+        this.setState({ isIncorrect: true });
+        this.setState({ isCorrect: false });
+        this.setState({ isAll: false });
+        console.log(e.target.value);
+      };
+
+      handleBulls = value => {
+        this.setState({ bullsValue: value });
+        this.setState({ isBulls: true });
+        // this.setState({ isCorrect: false });
+        this.setState({ isFilter: false });
+        // this.setState({ isAll: false });
+        console.log("bulls", value);
+      };
+
+      handleDecision = value => {
+        this.setState({ decisionValue: value });
+        this.setState({ isDecision: true });
+        this.setState({ isFilter: false });
+        // this.setState({ isCorrect: false });
+        // this.setState({ isAll: false });
+        console.log("decide", value);
+      };
+
+      handleFilter = e => {
+        this.setState({ isFilter: true });
+        console.log(this.state.isFilter);
+      };
+      render() {
+        const { drop, all } = this.state;
+
+        // console.log(" from func", this.getTableData());
+        return (
+          <div>
+            <form action="">
+              <input
+                ref={refId => {
+                  this.results = refId;
+                }}
+                type="radio"
+                name="results"
+                value="all"
+                onClick={e => this.handleAllRes(e)}
+                defaultChecked
+              />
+              All<br />
+              <input
+                type="radio"
+                name="results"
+                value="correct"
+                onClick={e => this.handleCorrectRes(e)}
+              />
+              correct<br />
+              <input
+                type="radio"
+                name="results"
+                value="incorrect"
+                onClick={e => this.handleIncorrectRes(e)}
+              />
+              Incorrect
+            </form>
+            <DropdownList
+              ref={refId => {
+                this.bulls = refId;
+              }}
+              data={drop.cat}
+              defaultValue="all"
+              // onSelect={value => this.handleBulls(value)}
+              onChange={value => this.handleBulls(value)}
+              style={{
+                width: 150 + "px",
+                marginLeft: 100 + "px",
+                marginRight: 20 + "px",
+                display: "inline-block"
+              }}
+            />
+
+            <DropdownList
+              ref={refId => {
+                this.decision = refId;
+              }}
+              data={drop.cat}
+              defaultValue="all"
+              onChange={value => this.handleDecision(value)}
+              style={{
+                width: 150 + "px",
+                display: "inline-block",
+                marginRight: 20 + "px"
+              }}
+            />
+
+            <button onClick={() => this.handleFilter()}>filter</button>
+            {/* <select
+              ref={refId => {
+                this.correct = refId;
+              }}
+              onChange={event => this.onChange(event.target.value)}
+              style={{ width: "150px", marginRight: 20 + "px" }}
+            >
+              <option value="all">all</option>
+              <option value="cat">cat</option>
+              <option value="dog">dog</option>
+              <option value="cow">cow</option>
+              <option value="hamster">hamster</option>
+              <option value="rabbit">rabbit</option>
+            </select>
+
+            <select
+              ref={refId => {
+                this.decision = refId;
+              }}
+              onChange={event => this.onChange(event.target.value)}
+              style={{ width: "150px" }}
+            >
+              <option value="all">all</option>
+              <option value="cat">cat</option>
+              <option value="dog">dog</option>
+              <option value="cow">cow</option>
+              <option value="hamster">hamster</option>
+              <option value="rabbit">rabbit</option>
+            </select> */}
+
+            <ReactTable
+              data={this.getTableData()}
+              // filterable
+              defaultFilterMethod={(filter, row) =>
+                String(row[filter.id]) === filter.value
+              }
+              columns={[
+                {
+                  Header: "Name",
+                  columns: [
+                    {
+                      Header: "First Name",
+                      accessor: "firstName",
+                      filterMethod: (filter, row) =>
+                        row[filter.id].startsWith(filter.value) &&
+                        row[filter.id].endsWith(filter.value)
+                    },
+                    {
+                      Header: "Last Name",
+                      id: "lastName",
+                      accessor: d => d.lastName,
+                      filterMethod: (filter, rows) =>
+                        matchSorter(rows, filter.value, {
+                          keys: ["lastName"]
+                        }),
+                      filterAll: true
+                    }
+                  ]
+                },
+                {
+                  Header: "Info",
+                  columns: [
+                    {
+                      Header: "Age",
+                      accessor: "age"
+                    },
+                    {
+                      Header: "Over 21",
+                      accessor: "age",
+                      id: "over",
+                      Cell: ({ value }) => (value >= 21 ? "Yes" : "No"),
+                      filterMethod: (filter, row) => {
+                        if (filter.value === "all") {
+                          return true;
+                        }
+                        if (filter.value === "true") {
+                          return row[filter.id] >= 21;
+                        }
+                        return row[filter.id] < 21;
+                      },
+                      Filter: ({ filter, onChange }) => (
+                        <select
+                          onChange={event => onChange(event.target.value)}
+                          style={{ width: "100%" }}
+                          value={filter ? filter.value : "all"}
+                        >
+                          <option value="all">Show All</option>
+                          <option value="true">Can Drink</option>
+                          <option value="false">Can't Drink</option>
+                        </select>
+                      )
+                    }
+                  ]
+                }
+              ]}
+              defaultPageSize={10}
+              className="-striped -highlight"
+            />
+            <br />
+          </div>
+        );
+      }
+    }
+
+    export default TestTable;
+
+
+
+
+
+
+
+https://stackoverflow.com/questions/34901593/how-to-filter-an-array-from-all-elements-of-another-array
+var arr = [1,2,3,4],
+brr = [2,4],
+res = arr.filter(f => !brr.includes(f));
+console.log(res);
+
+var filtered=[1,2,3,4].filter(function(e){return this.indexOf(e)<0;},[2,4]);
+
+    import React, { Component } from "react";
+    import "../index.css";
+    import PictureBoard from "../Components/PictureBoard";
+    import { connect } from "react-redux";
+    import { loadImages } from "../actions/imageAction";
+    import getData from "../actions/treeAction";
+    import TreeListCreate from "../Components/TreeListCreate";
+    import dataset from "../Server/testData.json";
+    // import Image from 'react-image-file'
+    import Parser from 'binary-parser'
+    import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, ReferenceLine,
+      ReferenceDot, Tooltip, CartesianGrid, Legend, Brush, ErrorBar, AreaChart, Area,
+      Label, LabelList } from 'recharts';
+
+    class PictureContainer extends Component {
+      constructor(props){
+        super(props)
+        this.state = {
+          data: []
+        }
+      }
+      componentWillMount = () => {
+        if (this.props.loadImages()) {
+          this.props.loadImages();
+        }
+        this.props.getData(dataset);
+
+      }
+
+      componentDidMount = () => {
+        this.exec()
+      }
+
+      // componentWillUnmount() {
+      //   this.exec()
+      // }
+
+
+
+      // createDataTree = dataset => {
+      //   let hashTable = Object.create(null);
+      //   let children = [];
+      //   let arr = dataset.label;
+      //   children = [
+      //     ...children,
+      //     { name: dataset.IMEO_SE },
+      //     { name: dataset.LABEL_STATUS }
+      //   ];
+      //   arr.map(aData => {
+      //     hashTable[aData.name] = {
+      //       ...aData,
+      //       children: []
+      //     };
+      //   });
+
+      //   let dataTree = [];
+      //   let names = [];
+      //   let basename_levels = [];
+      //   let label = Object.create(null);
+      //   arr.map(data => {
+      //     names.push(data.name);
+      //     basename_levels.push(data.basename_level);
+      //     let flag = false;
+      //     for (var name in names) {
+      //       for (var basename_level in basename_levels) {
+      //         if (name === basename_level) {
+      //           flag = true;
+      //         } else {
+      //           flag = false;
+      //         }
+      //       }
+      //     }
+
+      //     if (flag && hashTable[data.basename_level] !== undefined) {
+      //       hashTable[data.basename_level].children.push(hashTable[data.name]);
+      //     } else {
+      //       dataTree.push(hashTable[data.name]);
+      //     }
+      //   });
+      //   let errorData = [];
+      //   errorData.push(dataset.error);
+
+      //   children = [...children, ...dataTree, dataset.error];
+      //   var goose = {
+      //     name: "react-treebeard",
+      //     toggled: false,
+      //     children
+      //   };
+      //   return goose;
+      // };
+
+      // toObject(arr) {
+      //   var rv = {};
+      //   for (var i = 0; i < arr.length; ++i) rv[i] = arr[i];
+      //   return rv;
+      // }
+
+      exec() {
+        let temp = []
+        let gas = []
+        let epoch = [1, 5, 2, 4, 6, 8, 12, 6, 7, 14, 20, 15, 19, 23, 18, 19, 29, 41, 23, 4]
+        let parts = this.split(epoch, 4)
+        let music = []
+        let data = []
+        for (let i = 0; i < parts.length; i++) {
+          if(i === 0) {
+            music = music.concat(this.full(temp, parts[i]))
+            for(let item in music) {
+              data.push(JSON.parse(`{"name": ${music[item]}, "age": ${item}}`))
+            }
+
+            this.setState({data})
+            console.log(data)
+            console.log("music", music)
+          } else {
+            setTimeout(() =>{
+              music = music.concat(this.full(temp, parts[i]))
+              for(let item in music) {
+                data.push(JSON.parse(`{"name": ${music[item]}, "age": ${20}}`))
+                console.log(JSON.parse(`{"name": ${music[item]}, "age": ${20}}`))
+              }
+              this.setState({...data,data})
+              console.log("music", music)
+            }, (i + i + 1) * 1000);
+          }
+
+        }
+      }
+
+      full = (arr, parts) => {
+        let all = []
+        arr = arr.concat(parts)
+        return arr
+      }
+
+      split(arr, n) {
+        var res = [];
+        while (arr.length) {
+          res.push(arr.splice(0, n));
+        }
+        return res;
+      }
+
+    //   sleep(milliseconds) {
+    //     var start = new Date().getTime();
+    //     for (var i = 0; i < 1e7; i++) {
+    //       if ((new Date().getTime() - start) > milliseconds){
+    //         break;
+    //       }
+    //     }
+    //   }
+
+    //   taken=(arr, src, i)=>{
+    // let kent =[]
+    //     // console.log("parts 1", src[i])
+    //     arr = arr.concat(src)
+    //     // arr = arr.concat(arr)
+    //     console.log("ans", arr)
+    //   }
+
+
+
+
+
+
+    const mapStateToProps = state => {
+      return {
+        images: state.imageReducer,
+        treeState: state.treeReducer
+      };
+    };
+
+    const mapDispatchToProps = dispatch => {
+      return {
+        loadImages: () => {
+          dispatch(loadImages());
+        },
+        getData: data => {
+          dispatch(getData(data));
+        }
+      };
+    };
+
+    export default connect(mapStateToProps, mapDispatchToProps)(PictureContainer);
+
+
+
+
+    [
+        {id: 1, title: 'hello', parent: 0},
+        {id: 2, title: 'hello', parent: 0},
+        {id: 3, title: 'hello', parent: 1},
+        {id: 4, title: 'hello', parent: 3},
+        {id: 5, title: 'hello', parent: 4},
+        {id: 6, title: 'hello', parent: 4},
+        {id: 7, title: 'hello', parent: 3},
+        {id: 8, title: 'hello', parent: 2}
+    ]
+
+
+    [
+        {id: 1, title: 'hello', parent: 0, children: [
+            {id: 3, title: 'hello', parent: 1, children: [
+                {id: 4, title: 'hello', parent: 3, children: [
+                    {id: 5, title: 'hello', parent: 4},
+                    {id: 6, title: 'hello', parent: 4}
+                ]},
+                {id: 7, title: 'hello', parent: 3}
+            ]}
+        ]},
+        {id: 2, title: 'hello', parent: 0, children: [
+            {id: 8, title: 'hello', parent: 2}
+        ]}
+    ]
+
+
+    function getNestedChildren(arr, parent) {
+        var out = []
+        for(var i in arr) {
+            if(arr[i].parent == parent) {
+                var children = getNestedChildren(arr, arr[i].id)
+
+                if(children.length) {
+                    arr[i].children = children
+                }
+                out.push(arr[i])
+            }
+        }
+        return out
+    }
+
+
+
+
+
+
+
+
+    Actions
+    Promise approach
+
+    export default function createUser(params) {
+      const request = axios.post('http://www..., params);
+
+      return (dispatch) => {
+        function onSuccess(success) {
+          dispatch({ type: CREATE_USER, payload: success });
+          return success;
+        }
+        function onError(error) {
+          dispatch({ type: ERROR_GENERATED, error });
+          return error;
+        }
+        request.then(success => onSuccess, error => onError);
+      };
+    }
+
+    Components
+
+    Promise approach
+    import React, { Component } from 'react';
+    import { connect } from 'react-redux'
+    import createUser from 'path of createUser'
+    class userForm extends Component {
+      constructor(props) {
+        super(props);
+        this.onSubmit = this.onSubmit.bind(this);
+      }
+      onSubmit(e) {
+        e.preventDefault();
+        let formInput = this.refs.createUserForm;
+        this.props.createUser(formInput.value)
+          .then((response) => {
+            // Do something with the response... add more thens.. etc
+          }, (error) => {
+            // Do something with the error
+          });
+       }
+      render() {
+        return (
+          <form onSubmit={this.onSubmit}>
+            <input placeholder="current user" ref="createUserForm" />
+            <button>Submit</button>
+          </form>
+        );
+      }
+    }
+    export default connect(null, {
+      createUser
+    })(userForm)
+
+
+    async/await approach
+
+    export default function createUser(params) {
+      return async dispatch => {
+        function onSuccess(success) {
+          dispatch({ type: CREATE_USER, payload: success });
+          return success;
+        }
+        function onError(error) {
+          dispatch({ type: ERROR_GENERATED, error });
+          return error;
+        }
+        try {
+          const success = await axios.post('http://www..., params);
+          return onSuccess(success);
+        } catch (error) {
+          return onError(error);
+        }
+      }
+    }
+
+
+Components
+    import React, { Component } from 'react';
+    import { connect } from 'react-redux'
+    import createUser from 'path of createUser'
+    class userForm extends Component {
+      constructor(props) {
+        super(props);
+        this.onSubmit = this.onSubmit.bind(this);
+      }
+      async onSubmit(e) {
+        e.preventDefault();
+
+        let formInput = this.refs.createUserForm;
+        try {
+          const response = await this.props.createUser(formInput.value);
+          // do something with response
+        } catch(error) {
+          // do something with error
+        }
+      }
+      render() {
+        return (
+          <form onSubmit={this.onSubmit}>
+            <input placeholder="current user" ref="createUserForm" />
+            <button>Submit</button>
+          </form>
+        );
+      }
+    }
+    export default connect(null, {
+      createUser
+    })(userForm)
+
+
+
+
+
+
+
+
+<code>
+import React, { Component } from "react";
+import JSONTree from "react-json-tree";
+import { Treebeard } from "react-treebeard";
+
+class TreeListCreate extends Component {
+  constructor(props) {
+    super(props);
+    // this.state = {};
+    this.onToggle = this.onToggle.bind(this);
+  }
+  componentWillMount = () => {
+    this.setState({ state: this.props.treeState.data });
+  };
+
+  componentWillReceiveProps = (nextProps) => {
+    console.log("next props", nextProps)
+  }
+
+  onToggle(node, toggled) {
+    const { cursor } = this.state;
+    console.log("state...", cursor)
+    if (cursor) {
+      cursor.active = false;
+    }
+    node.active = true;
+    if (node.children) {
+      node.toggled = toggled;
+    }
+    this.setState({ cursor: node });
+  }
+
+  render() {
+    const json = {
+      array: this.props.treeState.data
+    };
+
+    return (
+      <div>
+        <h3>Display list</h3>
+        <Treebeard data={this.props.treeState.data} onToggle={this.onToggle} />
+        <JSONTree data={json} invertTheme hideRoot />
+        <hr />
+      </div>
+    );
+  }
+}
+
+export default TreeListCreate;
+
+
+
+
+// import dataset from "../Server/testData.json";
+
+const treeReducer = (
+  state = {
+    data: []
+  },
+  action
+) => {
+  switch (action.type) {
+    case "GET_TREE_DATA":
+      return {
+        ...state,
+        data: createDataTree(action.payload)
+      };
+    default:
+      return state;
+  }
+  // return state;
+};
+
+const createDataTree = dataset => {
+  let hashTable = Object.create(null);
+  let children = [];
+  let arr = dataset.label;
+  children = [
+    ...children,
+    { name: dataset.IMEO_SE },
+    { name: dataset.LABEL_STATUS }
+  ];
+
+  arr.map(aData => {
+    return hashTable[aData.name] = {
+      ...aData,
+      children: []
+    };
+  });
+
+  let dataTree = [];
+  let names = [];
+  let basename_level = [];
+  // let label = Object.create(null);
+  arr.map(data => {
+    names.push(data.name);
+    basename_level.push(data.basename_level);
+
+    let flag = false;
+
+    for (var i in names) {
+      for (var j in basename_level) {
+        if (i === j) {
+          flag = true;
+        } else {
+          flag = false;
+        }
+      }
+    }
+
+    if (flag && hashTable[data.basename_level] !== undefined) {
+      return hashTable[data.basename_level].children.push(hashTable[data.name]);
+    } else {
+      return dataTree.push(hashTable[data.name]);
+    }
+  });
+
+  children = [
+    ...children,
+    ...dataTree,
+    { name: dataset.error.id },
+    { name: dataset.error.message }
+  ];
+  const mainTree = {
+    name: "picture data",
+    toggled: false,
+    children
+  };
+  return mainTree;
+};
+
+export default treeReducer;
+
+
+const getData = (dataset) => {
+  console.log("action payload", dataset)
+  return {
+    type: "GET_TREE_DATA",
+    payload: dataset
+  }
+}
+
+export default getData;
+
+// const createDataTree = (dataset) => {
+//   let hashTable = Object.create(null);
+//   let header = []
+//   let children = []
+//   let arr = dataset.label
+//   children = [...children, {"name": dataset.IMEO_SE}, {"name": dataset.LABEL_STATUS}]
+
+//   arr.map(aData => {
+//     hashTable[aData.name] = {
+//       ...aData,
+//       children: []
+//     }
+//   });
+
+//   let dataTree = [];
+//   let names = []
+//   let baseName = []
+//   let label = Object.create(null)
+//   arr.map(data => {
+//     names.push(data.name);
+//     baseName.push(data.basename_level)
+//     let flag = false;
+//     for(var i in names) {
+//       for(var j in baseName) {
+//         if (i === j) {
+//           flag = true
+//         } else {
+//           flag = false
+//         }
+//       }
+//     }
+
+//     if (flag && hashTable[data.basename_level] !== undefined) {
+//       hashTable[data.basename_level].children.push(hashTable[data.name]);
+//     } else {
+//       dataTree.push(hashTable[data.name]);
+//     }
+//   });
+
+//   children = [...children, ...dataTree, { name: dataset.error.id }, { name: dataset.error.message }];
+//   var mainTree = {
+//     "name": "picture data",
+//     "toggled": false,
+//     children
+//   }
+//   return mainTree;
+// }
+
+// export default data;
+
+
+
+
+import React, { Component } from "react";
+import "../index.css";
+import PictureBoard from "../Components/PictureBoard";
+import { connect } from "react-redux";
+import { loadImages } from "../actions/imageAction";
+import getData from "../actions/treeAction";
+import TreeListCreate from "../Components/TreeListCreate";
+import dataset from "../Server/testData.json";
+
+class PictureContainer extends Component {
+  componentWillMount = () => {
+    if (this.props.loadImages()) {
+      this.props.loadImages();
+    }
+    this.props.getData(dataset);
+  }
+
+  // createDataTree = dataset => {
+  //   let hashTable = Object.create(null);
+  //   let children = [];
+  //   let arr = dataset.label;
+  //   children = [
+  //     ...children,
+  //     { name: dataset.IMEO_SE },
+  //     { name: dataset.LABEL_STATUS }
+  //   ];
+  //   arr.map(aData => {
+  //     hashTable[aData.name] = {
+  //       ...aData,
+  //       children: []
+  //     };
+  //   });
+
+  //   let dataTree = [];
+  //   let names = [];
+  //   let basename_levels = [];
+  //   let label = Object.create(null);
+  //   arr.map(data => {
+  //     names.push(data.name);
+  //     basename_levels.push(data.basename_level);
+  //     let flag = false;
+  //     for (var name in names) {
+  //       for (var basename_level in basename_levels) {
+  //         if (name === basename_level) {
+  //           flag = true;
+  //         } else {
+  //           flag = false;
+  //         }
+  //       }
+  //     }
+
+  //     if (flag && hashTable[data.basename_level] !== undefined) {
+  //       hashTable[data.basename_level].children.push(hashTable[data.name]);
+  //     } else {
+  //       dataTree.push(hashTable[data.name]);
+  //     }
+  //   });
+  //   let errorData = [];
+  //   errorData.push(dataset.error);
+
+  //   children = [...children, ...dataTree, dataset.error];
+  //   var goose = {
+  //     name: "react-treebeard",
+  //     toggled: false,
+  //     children
+  //   };
+  //   return goose;
+  // };
+
+  // toObject(arr) {
+  //   var rv = {};
+  //   for (var i = 0; i < arr.length; ++i) rv[i] = arr[i];
+  //   return rv;
+  // }
+
+  render() {
+    console.log("properties ", this.props);
+    return (
+      <div>
+        <PictureBoard images={this.props.images} />
+        <TreeListCreate
+          list={this.createDataTree}
+          treeState={this.props.treeState}
+        />
+      </div>
+    );
+  }
+}
+
+const mapStateToProps = state => {
+  return {
+    images: state.imageReducer,
+    treeState: state.treeReducer
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    loadImages: () => {
+      dispatch(loadImages());
+    },
+    getData: data => {
+      dispatch(getData(data));
+    }
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(PictureContainer);
+
+</code>
+
+
+
+
+
+
+
+
+
+
+
+
+            function buttonFormat( cellvalue, options, rowObject ){
+                be = "<input id='"+options.rowId+"eBnt' style='height:22px;width:20px;' type='button' value='E' onclick=\"afterrestorefunc('"+options.rowId+"eBnt');$('#list4').jqGrid('editRow', '"+options.rowId+"');\"  />";
+                se = "<input id='"+options.rowId+"sBnt' style='height:22px;width:20px;' type='button' value='S' onclick=\"$('#list4').jqGrid('saveRow', '"+options.rowId+"');\" />";
+                ce = "<input id='"+options.rowId+"cBnt' style='height:22px;width:20px;' type='button' value='C' onclick=\"$('#list4').jqGrid('restoreRow', '"+options.rowId+"', afterrestorefunc());\" />";
+                return be + se + ce;
+            }
+
+            function afterrestorefunc(elem){
+                $("#list4").trigger("reloadGrid");
+                $("#"+elem).prop('disabled', true);
+            }
+
+
+
+        public static String getIDs(File file, String title) {
+                String searchKey = "";
+                String res = "";
+                String titleValue = "";
+                try (Scanner scanner = new Scanner(new File(file.getPath()))) {
+                    scanner.useDelimiter("[,\n]");
+                    while (scanner.hasNext()) {
+                        searchKey = scanner.next();
+                        if (!searchKey.contains(title)) {
+                            continue;
+                        }
+                        titleValue = scanner.next();
+                        res = titleValue;
+                        break;
+                    }
+                }
+                catch (FileNotFoundException e) {
+                    LOGGER.log(Level.INFO, "name" + e);
+                }
+                return res;
+            }
+
+            *************************************************************
+        ObjectMapper om = new ObjectMapper();
+        StringWriter sw = new StringWriter();
+        om.writeValue(object, sw);
+        Map<String, Object> map = om.readValue(sw.toString(), Map.class);
+
+        ************************************************************
+        ObjectMapper m = new ObjectMapper();
+        Map<String,Object> mappedObject = m.convertValue(myObject,Map.class);
+
+
+        ************************************************************
+        function validateRows() {
+        var nameArr = $("#list4").jqGrid('getCol',"name");
+        var amountArr = $("#list4").jqGrid('getCol',"amount");
+        var taxArr = $("#list4").jqGrid('getCol',"tax");
+        var idArr = $("#list4").jqGrid('getCol',"id");
+        console.log($("#list4").jqGrid('getCol',"name"));
+        for( var i in nameArr){
+            console.log("i value: ", nameArr[i]);
+            if(i === "test") {
+                console.log("found duplicate");
+            }
+        }
+        if(nameArr.indexOf("test") >= 0 && amountArr.indexOf("300.00") >= 0 && taxArr.indexOf("30.00") >= 0 && idArr.indexOf("10") >= 0) {
+            console.log("array contains duplicates");
+        } else {
+            console.log("array does not contain duplicates");
+        }
+    }
+
+
+        private Map<String,Object> getMap(String string) {
+            HashMap<String,Object> result = new HashMap<>();
+            Object object = JSON.parse(string);
+            if (object instanceof Map) {
+                Map<?,?> map = (Map)(object);
+                for (Map.Entry<?,?> entry : map.entrySet()) {
+                    String key = entry.getKey().toString();
+                    Object value = entry.getValue();
+                    result.put(key,value);
+                }
+            }
+            return result;
+        }
+https://www.mkyong.com/java/how-to-convert-java-map-to-from-json-jackson/
+http://theoryapp.com/parse-json-in-java/
+http://www.geeksforgeeks.org/parse-json-java/
+***************************************************************************
+
+        package com.clicurt;
+
+        import java.io.File;
+        import java.io.FileNotFoundException;
+        import java.util.Scanner;
+        import java.util.logging.Level;
+        import java.util.logging.Logger;
+
+        import javax.swing.JOptionPane;
+
+        public class ReadNSearchFile {
+            private static Scanner x;
+            private static final Logger LOGGER = Logger.getLogger(Names.class.getName());
+
+            public static void main(String[] args) {
+                String filePath = "C:/tmp/test.csv";
+                String searchTerm = "platinum";
+
+                readRecord(searchTerm, filePath);
+            }
+
+            public static void readRecord(String searchTerm, String filePath) {
+                boolean found = false;
+                String id = "";
+                String name = "";
+                String age = "";
+                try {
+                    x = new Scanner(new File(filePath));
+                    LOGGER.log(Level.INFO, "this is path" + filePath);
+                    x.useDelimiter("[,\n]");
+                    while(x.hasNext() && !found) {
+                        id = x.next();
+                        LOGGER.log(Level.INFO, "this is id..." + id);
+                        name = "name";
+                        age = "14";
+                        LOGGER.log(Level.INFO, "searchTerm..." + searchTerm);
+                        if(id.contains(searchTerm)) {
+                            found = true;
+                            LOGGER.log(Level.INFO, "found" + found);
+                        }
+
+                        if(found) {
+                            JOptionPane.showMessageDialog(null, "ID: " +id + " Name: " + name + " Age: " + age);
+                        } else {
+                            LOGGER.log(Level.INFO, "Record not found");
+                        }
+                    }
+                }
+                catch (FileNotFoundException e) {
+                    LOGGER.log(Level.INFO, "name" + e);
+                }
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+        $.jgrid.inlineEdit = $.jgrid.inlineEdit || {};
+        $.jgrid.extend({
+            beforeSaveRow: function (option, rowId) {
+                var o={}, args = $.makeArray(arguments).slice(1);
+                if( $.type(args[0]) === "object" ) {
+                    o = args[0];
+                } else {
+                    if (typeof keys !== "undefined") { o.keys = keys; }
+                    if ($.isFunction(oneditfunc)) { o.oneditfunc = oneditfunc; }
+                    if ($.isFunction(successfunc)) { o.successfunc = successfunc; }
+                    if (typeof url !== "undefined") { o.url = url; }
+                    if (typeof extraparam !== "undefined") { o.extraparam = extraparam; }
+                    if ($.isFunction(aftersavefunc)) { o.aftersavefunc = aftersavefunc; }
+                    if ($.isFunction(errorfunc)) { o.errorfunc = errorfunc; }
+                    if ($.isFunction(afterrestorefunc)) { o.afterrestorefunc = afterrestorefunc; }
+                    // last two not as param, but as object (sorry)
+                    //if (typeof restoreAfterError !== "undefined") { o.restoreAfterError = restoreAfterError; }
+                    //if (typeof mtype !== "undefined") { o.mtype = mtype || "POST"; }
+                }
+                o = $.extend(true, {
+                    keys : true,
+                    oneditfunc: function(){
+                        console.log("start edit");
+                    },
+                    successfunc: function(xhr){
+                        console.log(xhr.responseText);
+                    },
+                    url: "clientArray",
+                    extraparam: params,
+                    aftersavefunc: function(){
+                        var rowData = $("#list4").jqGrid("getRowData", rowId);
+                        console.log(rowData);
+                        var id = $("#list4").jqGrid("getRowData", rowId).id;
+                       console.log(id);
+                       var name = $("#list4").jqGrid("getRowData", rowId).name;
+                      console.log(name);
+                      var note = $("#list4").jqGrid("getRowData", rowId).note;
+                      var tax = $("#list4").jqGrid("getRowData", rowId).tax;
+                      var total = $("#list4").jqGrid("getRowData", rowId).total;
+                      var invdate = $("#list4").jqGrid("getRowData", rowId).invdate;
+                      var amount = $("#list4").jqGrid("getRowData", rowId).amount;
+                      var params = {};
+                      params.comment = 'comment';
+                      params.name = name;
+                      params.tax = tax;
+                      params.total = total;
+                      params.invdate = invdate;
+                      params.amount = amount;
+                      params.invdate = invdate;
+                      params.note = note;
+                       $.ajax({
+                           url: '@routes.HomeController.editGridData',
+                           type: 'POST',
+                           data: params,
+                           success: function (data, textStatus, jqXHR) {
+                               $("#list4").jqGrid('setGridParam', { datatype: 'json' });
+                               $("#list4").trigger('reloadGrid');
+                           },
+                           error: function (jqXHR, textStatus, errorThrown) {
+                               alert('Error saving data: ' + textStatus + " " + errorThrown);
+                           }
+                       });
+                   },
+                    errorfunc: null,
+                    afterrestorefunc: null,
+                    restoreAfterError: true,
+                }, $.jgrid.inlineEdit, o );
+            }
+        });
+
+
+
+        {name: 'fullName', index: 'fullname', editable: true, edittype: 'custom', width: 300,
+              editoptions: {
+                  custom_element: formatRating,
+                  custom_value: unformatRating
+              }
+        },
+
+        function formatRating(cellValue, options, rowObject) {
+             var radioHtml = "<div class='star'><table cellspacing='5' width='100%'>" +
+             "<tr><td valign='top'>" +
+             "</td><td valign='top' width='10'>&raquo;</td>" +
+             "<td valign='top' width='180'>" +
+             "<input name='star3' type='radio' class='star' disabled='disabled'/>" +
+             "<input name='star3' type='radio' class='star' disabled='disabled'/>" +
+             "<input name='star3' type='radio' class='star' disabled='disabled' checked='checked'/>" +
+             "<input name='star3' type='radio' class='star' disabled='disabled'/>" +
+             "<input name='star3' type='radio' class='star' disabled='disabled'/>" +
+             "</td></tr></table></div>"
+             return radioHtml;
+
+         }
+
+         function unformatRating(cellValue, options, cellObject) {
+             var radioHtml = "";
+             return radioHtml;
+         }
+
+
+        $.extend(true, $.jgrid.inlineEdit, {
+            beforeSaveRow: function (option, rowId) {
+                option.oneditfunc = function(){
+                    console.log("start edit");
+                },
+                option.successfunc = function(xhr){
+                    console.log(xhr.responseText);
+                },
+                option.url = "clientArray",
+                // option.extraparam = params,
+                option.aftersavefunc = function(rowId) {
+                     var rowData = $("#list4").jqGrid("getRowData", rowId);
+                     console.log(rowData);
+                     var id = $("#list4").jqGrid("getRowData", rowId).id;
+                    console.log(id);
+                    var name = $("#list4").jqGrid("getRowData", rowId).name;
+                   console.log(name);
+                   var note = $("#list4").jqGrid("getRowData", rowId).note;
+                   var tax = $("#list4").jqGrid("getRowData", rowId).tax;
+                   var total = $("#list4").jqGrid("getRowData", rowId).total;
+                   var invdate = $("#list4").jqGrid("getRowData", rowId).invdate;
+                   var amount = $("#list4").jqGrid("getRowData", rowId).amount;
+                   var params = {};
+                   params.comment = 'comment';
+                   params.name = name;
+                   params.tax = tax;
+                   params.total = total;
+                   params.invdate = invdate;
+                   params.amount = amount;
+                    $.ajax({
+                        url: '@routes.HomeController.editGridData',
+                        type: 'POST',
+                        data: params,
+                        success: function (data, textStatus, jqXHR) {
+                            $("#list4").jqGrid('setGridParam', { datatype: 'json' });
+                            $("#list4").trigger('reloadGrid');
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            alert('Error saving data: ' + textStatus + " " + errorThrown);
+                        }
+                    });
+                },
+                option.afterrestorefunc = function(rowId) {
+                    console.log("restored");
+                },
+                option.restoreAfterError = true
+            }
+        });
+    <script type="text/javascript">
+
+            $(function() {
+                var mydata = [
+                        {id:"1",invdate:"2007-10-01",name:"test",note:"note",amount:"200.00",tax:"10.00",total:"210.00", Ranking:"4"},
+                        {id:"2",invdate:"2007-10-02",name:"test2",note:"note2",amount:"300.00",tax:"20.00",total:"320.00", Ranking:"4"},
+                        {id:"3",invdate:"2007-09-01",name:"test3",note:"note3",amount:"400.00",tax:"30.00",total:"430.00", Ranking:"3"},
+                        {id:"4",invdate:"2007-10-04",name:"test",note:"note",amount:"200.00",tax:"10.00",total:"210.00", Ranking:"2"},
+                        {id:"5",invdate:"2007-10-05",name:"test2",note:"note2",amount:"300.00",tax:"20.00",total:"320.00", Ranking:"4"},
+                        {id:"6",invdate:"2007-09-06",name:"test3",note:"note3",amount:"400.00",tax:"30.00",total:"430.00", Ranking:"5"},
+                        {id:"7",invdate:"2007-10-04",name:"test",note:"note",amount:"200.00",tax:"10.00",total:"210.00", Ranking:"4"},
+                        {id:"8",invdate:"2007-10-03",name:"test2",note:"note2",amount:"300.00",tax:"20.00",total:"320.00", Ranking:"4"},
+                        {id:"9",invdate:"2007-09-01",name:"test3",note:"note3",amount:"400.00",tax:"30.00",total:"430.00", Ranking:"4"}
+                ];
+                createTest_Button();
+                noteButton();
+                alternate();
+                $.get("@routes.HomeController.getGridData", function(data, status){
+                    showGrid(mydata);
+    //                showGrid([data]);
+                    console.log("Data: " + data );
+                });
+                // var ret = {};
+                // var keys = [1,2,3,4,5,6];
+                // var values = ["a", "b", "c", "d", "e", "f"];
+                // ret = mapToObject(keys, values);
+                // var retArray = $.map(ret, function(index, value) {
+                //     console.log(index, value);
+                // });
+                // console.log(mapToObject(keys, values));
+                //
+                // var sample = ['189', '190', '182'];
+                // var mask = ['70', '72', '71', '182'];
+                // for (var j in sample) {
+                //     removeSlot = $.grep(mask, function(e) {
+             //  		    return (e == sample[j]);
+                //     });
+                // }
+                //
+                // console.log("removeSlot ", removeSlot);
+            });
+            function mapToObject(keys, values) {
+                var result = {};
+                for(var i=0; i < keys.length; i++) {
+                    result[keys[i]] = values[i];
+                }
+                return result;
+            }
+
+            var grid = $('#list4');
+
+            var lastSel;
+            var params = {};
+            params.comment = 'loaf';
+            params.Ranking = "4";
+            // var editparameters = {
+            //         keys : true,
+            //         oneditfunc : function(){
+            //             console.log("start edit");
+            //         },
+            //         successfunc : function(xhr){
+            //             console.log(xhr.responseText);
+            //         },
+            //         url : "@routes.HomeController.receiveDataDB",
+            //         extraparam : params,
+            //         restoreAfterError : true
+            //     }
+            //
+            // var saveparameters = {
+            //         successfunc : function(xhr){
+            //             console.log(xhr.responseText);
+            //         },
+            //         url : "@routes.HomeController.receiveDataDB",
+            //         extraparam : params,
+            //         aftersavefunc : function(){
+            //             console.log('saved');
+            //         },
+            //         errorfunc: null,
+            //         afterrestorefunc : null,
+            //         restoreAfterError : true
+            //     }
+
+           myDelOptions = {
+               // because I use "local" data I don't want to send the changes to the server
+               // so I use "processing:true" setting and delete the row manually in onclickSubmit
+               onclickSubmit: function (rp_ge, rowid) {
+                   // reset the value of processing option to true to
+                   // skip the ajax request to 'clientArray'.
+                   rp_ge.processing = true;
+
+                   // we can use onclickSubmit function as "onclick" on "Delete" button
+                   // delete row
+                   var grid = $('#list4');
+                   grid.jqGrid('delRowData', rowid);
+                   $("#delmod" + grid[0].id).hide();
+
+                   if (grid[0].p.lastpage > 1) {
+                       // reload grid to make the row from the next page visable.
+                       // TODO: deleting the last row from the last page which number is higher as 1
+                       grid.trigger("reloadGrid", [{ page: grid[0].p.page}]);
+                   }
+
+                   return true;
+               },
+               processing: true
+           },
+           myEditOptions = {
+               // because I use "local" data I don't want to send the changes to the server
+               // so I use "processing:true" setting and delete the row manually in onclickSubmit
+               onclickSubmit: function (rp_ge, rowid) {
+               //     // reset the value of processing option to true to
+               //     // skip the ajax request to 'clientArray'.
+                   rp_ge.processing = true;
+               //
+               //     // we can use onclickSubmit function as "onclick" on "Delete" button
+               //     // delete row
+                   // var $self = $('#list4');
+                   var grid = $('#list4');
+                   grid.jqGrid("saveRow", rowid, saveparameters);
+                   // var $self = $('#list4'),
+               //     // savedRows array is not empty if some row is in inline editing mode
+                   // savedRows = $self.jqGrid("getGridParam", "savedRow");
+                   // if (savedRows.length > 0) {
+                   //     $self.jqGrid("restoreRow", savedRows[0].id);
+                   // }
+                   // $self.jqGrid("editRow", rowid, editparameters);
+                   console.log('Used');
+
+                   return true;
+               },
+               processing: true
+           };
+
+            //  var orgRowActions = $.fn.fmatter.rowactions;
+            //     $.fn.fmatter.rowactions = function (e, act) {
+            //         var $grid = $(this).closest("table.ui-jqgrid-btable"),
+            //             rowid = $(this).closest("tr.jqgrow").attr("id");
+            //         if (act === "edit") {
+            //             $grid.jqGrid("viewGridRow", rowid);
+            //          //    $grid.jqGrid('editRow', rowid, editparameters);
+            //             return false;
+            //         }
+            //         return orgRowActions.call(this, e, act);
+                // }
+
+            function showGrid(data) {
+                var grid = $("#list4");
+                var initRaty = function(rowid) {
+                        var ranking = grid.getCell(rowid, 8); // the Ranking column has the index 4
+                        // because we use rownumbers:true the index of the Ranking column will be 1 higher
+                        $('#' + rowid +'> td:nth-child(9) > div').raty({
+                            path:'@routes.Assets.versioned("images/raty/")',
+                            start:ranking,
+                            readOnly:true
+                        });
+                };
+                var postData = {};
+                postData.time = "travel";
+                postData.ring = "loard";
+                jQuery("#list4").jqGrid({
+                    data : data,
+                    datatype: "local",
+                    height: 250,
+                    colNames:['Inv No','Date', 'Client', 'Amount','Tax','Total','Notes', 'Rating', 'Actions'],
+                    colModel:[
+                        {name:'id',index:'id', width:60, sorttype:"int", editable:true},
+                        {name:'invdate',index:'invdate', width:90, sorttype:"date", editable:true},
+                        {name:'name',index:'name', width:100, editable:true},
+                        {name:'amount',index:'amount', width:80, align:"right",sorttype:"float", editable:true},
+                        {name:'tax',index:'tax', width:80, align:"right",sorttype:"float", editable:true},
+                        {name:'total',index:'total', width:80,align:"right",sorttype:"float", editable:true},
+                        {name:'note',index:'note', width:150, sortable:false, editable:true},
+                        {name:'Ranking', editable:true, width:100, title: false,
+                            formatter: function(cellvalue, options, rowObject) {
+                                // insert div needed for the raty plugin
+                                // and insert a hidden span with the rating value
+                                return '<div></div><span style="display: none;">'+cellvalue+'</span>';
+                            }, unformat: function (cellvalue, options, cellobject) {
+                                // get rating value from the hidden span
+                                return cellobject.find("span").text();
+                            }, edittype:'custom', editoptions: {
+                                custom_element: function(value, options) {
+                                    var val = $(value);
+                                    var elem = $('<div id="'+options.id+'"/>');
+                                    setTimeout(function(){
+                                        elem.raty({
+                                            path:'@routes.Assets.versioned("images/raty/")',
+                                            start:(val.length>1? val[1].innerText: value)
+                                        });
+                                    }, 100);
+                                    return elem[0];
+                                },
+                                custom_value: function(elem) {
+                                    return elem.find("input").val();
+                                }
+                            }
+                        },
+                        {name:'act',index:'act', width:75,sortable:false, formatter: buttonFormat
+                        //    formatoptions : {
+                        //        keys : true,
+                        //        delOptions : myDelOptions,
+                        //        // editOptions : this.beforeSubmitCell,
+                        //        editbutton : true,
+                        //        delbutton : true
+                        //    },
+                         }
+                    ],
+                    viewrecords: true,
+                    gridview:true,
+                    loadComplete: function() {
+                        var ids = grid.getDataIDs();
+                        for(var i=0;i<ids.length;i++){
+                            initRaty(ids[i]);
+                        }
+                    },
+                    ondblClickRow: function(id, ri, ci) {
+                        // edit the row and save it on press "enter" key
+                        grid.jqGrid('editRow',id,true,null,null, 'clientArray', {}, initRaty);
+                    },
+                    // ajaxRowOptions: { contentType: "application/json", dataType: "json" },
+                    // serializeRowData: function (data) { return JSON.stringify(data); },
+                    caption: "Manipulating Array Data",
+                    onSelectRow: function(id){
+    //                    var $self = $(this),
+    //                    // savedRows array is not empty if some row is in inline editing mode
+    //                    savedRows = $self.jqGrid("getGridParam", "savedRow");
+    //                    if (savedRows.length > 0) {
+    //                        $self.jqGrid("restoreRow", savedRows[0].id);
+    //                    }
+    //                    $self.jqGrid("editRow", rowid, editparameters);
+                        if (id && id !== lastSel) {
+                            // cancel editing of the previous selected row if it was in editing state.
+                            // jqGrid hold intern savedRow array inside of jqGrid object,
+                            // so it is safe to call restoreRow method with any id parameter
+                            // if jqGrid not in editing state
+                            if (typeof lastSel !== "undefined") {
+                                grid.jqGrid('restoreRow',lastSel);
+                                var cell = $('#' + lastSel +'> td:nth-child(5)');
+                                var spans = cell.find('span');
+                                if (spans.length > 1 ) {
+                                    // if the lastSel row was not only selected, but also
+                                    // was in editing mode, get the hidden text with the ranking
+                                    var ranking = cell.find('span')[1].innerText;
+                                    cell.find('div').raty({
+                                        path:'@routes.Assets.versioned("images/raty/")',
+                                        start:ranking,
+                                        readOnly:true
+                                    });
+                                }
+                            }
+                            lastSel = id;
+                        }
+                    },
+                    rownumbers : true,
+                    gridComplete: function(){
+                        var ids = grid.getDataIDs();
+                        for(var i=0;i<ids.length;i++){
+                            initRaty(ids[i]);
+                        }
+                    },
+                    // editurl: "@routes.HomeController.editGridData",
+                    // cellEdit : true,
+                    // cellsubmit : 'remote',
+                    // cellurl : '@routes.HomeController.receiveDataDB',
+                    // beforeSubmitCell : function(rowid,celname,value,iRow,iCol) {
+                    //   if( rowid == 1 ) {
+                    //     return {comment:"value1"}
+                    //   } else{
+                    //     return {}
+                    //   }
+                    // }
+                });
+                // for(var i=0;i<=data.length;i++) {
+                //     $("#list4").jqGrid('addRowData',i+1,data[i]);
+                // }
+                // $.extend(true, $.jgrid.inlineEdit, {
+                //     beforeSaveRow: function (option, rowId) {
+                //         option.oneditfunc = function(){
+                //             console.log("start edit");
+                //         },
+                //         option.successfunc = function(xhr){
+                //             console.log(xhr.responseText);
+                //         },
+                //         option.url = "@routes.HomeController.editGridData",
+                //         option.extraparam = params,
+                //         option.aftersavefunc = function() {
+                //             console.log("saved");
+                //         },
+                //         option.afterrestorefunc = function() {
+                //             $("#list4").trigger("reloadGrid");
+                //             console.log("restored");
+                //         },
+                //         option.restoreAfterError = true
+                //     }
+                // });
+
+
+         }
+        function buttonFormat( cellvalue, options, rowObject ){
+            be = "<input style='height:22px;width:20px;' type='button' value='E' onclick=\"$('#list4').jqGrid('editRow', '"+options.rowId+"');\"  />";
+            se = "<input style='height:22px;width:20px;' type='button' value='S' onclick=\"$('#list4').jqGrid('saveRow', '"+options.rowId+"');\" />";
+            ce = "<input style='height:22px;width:20px;' type='button' value='C' onclick=\"$('#list4').jqGrid('restoreRow', '"+options.rowId+"', '"+afterrestorefunc()+"');\" />";
+            return be + se + ce;
+        }
+
+        function afterrestorefunc(){
+            $("#list4").trigger("reloadGrid");
+        }
+
+        function alternate() {
+            $("#note_btn").click(function () {
+            $("#list4").jqGrid('saveRow', 1, false, 'clientArray');
+            var rowData = $("#list4").jqGrid('getRowData');
+            var params = {};
+            params.name = 'loaf';
+            params.comment = 'coommet';
+            var dataToSend = JSON.stringify(rowData);
+            // datas = {
+            //         name: "great",
+            //         comment : "times"
+            //     };
+            // $.ajax({
+            //     url: "@routes.HomeController.editGridData()",
+            //     data: JSON.stringify(datas),
+            //     headers: {
+            //       'Content-Type': 'application/json'
+            //     },
+            //     type: 'POST',
+            //     success: function(res) {
+            //           if (res) {
+            //               console.log("Success!" + res);
+            //           } else {
+            //               console.log("Failed...");
+            //           }
+            //     },
+            // });
+            $.ajax({
+                url: '@routes.HomeController.editGridData',
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                data: dataToSend,
+                dataType: 'json',
+                async: false,
+                success: function (data, textStatus, jqXHR) {
+                    $("#list4").jqGrid('setGridParam', { datatype: 'json' });
+                    $("#list4").trigger('reloadGrid');
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert('Error saving data: ' + textStatus + " " + errorThrown);
+                }
+            });
+        return true;
+    });
+        }
+
+        var trace = createTest_Button();
+        function noteButton() {
+            var btnDef = {
+                    width : 120,
+                    label : "From Class",
+                    eventClickFunc: function(e, data) {
+                        console.log('From Class also clicked');
+                    }
+                }
+            return new Button("note_btn", btnDef);
+        }
+
+        function createTest_Button() {
+            var buttonDef = {
+                label : "test Grid page",
+                width : 120,
+                disabled : false,
+                eventClickFunc: function(e, data) {
+                    location.href='@routes.CountController.testGrid'
+                }
+            },
+            test = new Button('my_button', buttonDef);
+         }
+        </script>
+
+        <div>
+            <button id="my_button" style="margin-bottom : 20px;"></button>
+        </div>
+        <div>
+            <button id="note_btn"></button>
+        </div>
+        <div style="margin-top:20px;">
+            <table id="list4"></table>
+        </div>
+    }
+
+    </pre>
 
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
