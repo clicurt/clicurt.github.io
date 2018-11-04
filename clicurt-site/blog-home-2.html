@@ -1,3 +1,64 @@
+
+import React from 'react';
+import { ContextMenu, MenuItem, ContextMenuTrigger }  from 'react-contextmenu'
+// import PropTypes from 'prop-types';
+
+export const MENU_TYPE = 'MENU_TYPE'
+export const DynamicMenu = (props) => {
+  const { id, trigger } = props;
+  const handleItemClick = trigger ? trigger.onItemClick : null;
+  console.log(props)
+  setContext(id, handleItemClick, trigger)
+  // return (
+  //     <ContextMenu id={id}>
+  //         {trigger && <MenuItem onClick={handleItemClick} data={{ action: 'Added' }}>{`Add 1 ${trigger.name}`}</MenuItem>}
+  //         {trigger && (
+  //             trigger.allowRemoval
+  //                 ? <MenuItem onClick={handleItemClick} data={{ action: 'Removed' }}>{`Remove 1 ${trigger.name}`}</MenuItem>
+  //                 : <MenuItem disabled>{'Removal disabled'}</MenuItem>
+  //         )}
+  //     </ContextMenu>
+  // );
+};
+
+export const setContext=(id, handleItemClick, trigger)=> {
+  console.log("trigger", trigger)
+  // const { id, trigger } = props;
+  // const handleItemClick = trigger ? trigger.onItemClick : null;
+  return(
+    
+    <ContextMenu id={id}>
+      {trigger && trigger.val.map((item, ix) => {
+        //  return(
+           return <MenuItem key={ix} onClick={handleItemClick} data={{ action: item.name }}>{`Add 1 ${item.disp}`}</MenuItem>
+        //  )
+      })}
+    </ContextMenu>
+  )
+}
+
+ setProps =(props)=>{
+    const action = [
+      {
+        name: 'Added',
+        disp: 'Add Item'
+      },
+      {
+        name: 'Removed',
+        disp: 'remove Item'
+      }
+    ]
+    console.log(action)
+    const items =  {...props}
+    items.val = action
+    return items
+  }
+
+
+
+
+
+
 $('button').on('click', function () {
     var timeOfCall = $('#timeOfCall').val(),
         timeOfResponse = $('#timeOfResponse').val(),
