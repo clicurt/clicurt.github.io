@@ -4,7 +4,21 @@
 <head>
 <pre>
 
+ // your code
+var mouseX = evt.clientX - left + window.pageXOffset;
+var mouseY = evt.clientY - top + window.pageYOffset;
 
+// Add the following 3 lines to scale the mouse coordinates to the
+// canvas resolution
+const bounds = canvas_test.getBoundingClientRect();
+mouseX = (mouseX / bounds.width) * canvas_test.width;
+mouseY = (mouseY / bounds.height) * canvas_test.height;
+
+// your code
+return {
+    x:mouseX,
+    y:mouseY
+};
 
 
 
