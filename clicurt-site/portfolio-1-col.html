@@ -4,6 +4,166 @@
 <head>
 <pre>
 
+
+
+
+
+
+/*
+ * A simple React component
+ */
+class Application extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      rowData: Array.from({length: 30}).map((item, index) => index),
+      selectedRow: []
+    };
+  }
+  render() {
+    const {
+      Column,
+      Table,
+      defaultTableHeaderRowRenderer
+    } = ReactVirtualized;
+
+    const list = new Array(200).fill(0).map((name, index) => ({
+      index,
+      label: `Row ${index}`
+    }));
+
+    const rowGetter = ({ index }) => list[index];
+
+    // This is a custom header row rendered
+    // You should used all of the specified params,
+    // But you can also add your own decorated behavior.
+    const headerRowRenderer = ({
+      className,
+      columns,
+      style
+    }) => (
+      <div
+        className={className}
+        role='row'
+        style={{display:'block';}}
+      >
+        {columns}
+      </div>
+    )
+
+    // This is a custom header example for a single cell
+    // You have access to all of the named params,
+    // But you don't necessarily need to use them all.
+    const headerRenderer = ({
+      columnData,
+      dataKey,
+      disableSort,
+      label,
+      sortBy,
+      sortDirection
+    }) => (
+        <table id="customers">
+          <tbody>
+          <tr>
+            <td>First cell in first table. The cell to the right has the second table in it.</td>
+            <td>
+
+                <table>
+                  <tbody>
+                  <tr><td>nested table</td></tr>
+                  <tr><td>nested table</td></tr>
+                    </tbody>
+                </table>
+
+            </td>
+          </tr>
+            </tbody>
+        </table>
+    )
+    
+    return (
+      <Table
+        headerHeight={20}
+        headerRowRenderer={headerRowRenderer}
+        height={200}
+        rowHeight={20}
+        rowGetter={rowGetter}
+        rowCount={list.length}
+        width={300}
+      >
+        <Column
+          dataKey='index'
+          headerRenderer={headerRenderer}
+          width={100}
+        />
+        <Column
+          dataKey='label'
+          headerRenderer={headerRenderer}
+          label='Label'
+          width={200}
+        />
+      </Table>
+      )
+  }
+}
+
+/*
+ * Render the above component into the div#app
+ */
+ReactDOM.render(<Application />, document.getElementById('app'));
+
+
+.List {
+  border: 1px solid black;
+  box-sizing: border-box;
+}
+.Row {
+  width: 100%;
+  height: 100%;
+  border-bottom: 1px solid black;
+  display: flex;
+  align-items: center;
+  padding: 0 0.5rem;
+  box-sizing: border-box;
+}
+
+#customers {
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#customers td, #customers th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+#customers tr:nth-child(even){background-color: #f2f2f2;}
+
+#customers tr:hover {background-color: #ddd;}
+
+#customers th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #4CAF50;
+  color: white;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
  // your code
 var mouseX = evt.clientX - left + window.pageXOffset;
 var mouseY = evt.clientY - top + window.pageYOffset;
