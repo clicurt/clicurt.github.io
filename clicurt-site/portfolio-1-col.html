@@ -6,6 +6,289 @@
 
 
 
+
+
+import React from "react";
+import { Column, Table, Grid } from "react-virtualized";
+import Draggable from "react-draggable";
+import "react-virtualized/styles.css";
+
+const TOTAL_WIDTH = 1500;
+// let columnWidth=30
+const list = [
+  { name: "Brian Vaughn", x: 13, y: 34, width: 123, height: 234 }
+  // And so on...
+];
+export default class App extends React.Component {
+  state = {
+    widths: {
+      name: 0.33,
+      location: 0.33,
+      description: 0.33,
+      school: 0.33,
+      jobArea: 0.33,
+      phone: 0.33,
+      hobby: 0.33
+    },
+    // columnWidth:0
+  };
+
+  cellRenderer = ({ columnIndex, key, rowIndex, style, columns }) => {
+    const { widths } = this.state;
+    let disp;
+    
+ 
+      
+    if (rowIndex === 0 && columnIndex === 0) {
+      disp = columns.slice(0, 1);
+      style = {...style, 
+        borderTop: "1px solid",
+        borderRight: "1px solid",
+        borderLeft: "0px",
+        borderBottom: "0px"}
+      // columnWidth = widths.name * TOTAL_WIDTH;
+    } else if (rowIndex === 0 && columnIndex === 1) {
+      disp = "MainOne";
+      // columnWidth = widths.location * TOTAL_WIDTH + widths.description * TOTAL_WIDTH + widths.school * TOTAL_WIDTH;
+    } else if (rowIndex === 0 && columnIndex === 2) {
+      disp = "MainTwo";
+      // columnWidth = widths.jobArea * TOTAL_WIDTH + widths.phone * TOTAL_WIDTH + widths.hobby * TOTAL_WIDTH;
+    } else if (rowIndex === 1 && columnIndex === 0) {
+      disp = "";
+      // columnWidth = widths.name * TOTAL_WIDTH;
+    } else if (rowIndex === 1 && columnIndex === 1) {
+      disp = columns.slice(1, 2);
+      // columnWidth = widths.location * TOTAL_WIDTH;
+    } else if (rowIndex === 1 && columnIndex === 2) {
+      disp = columns.slice(2, 3);
+      // columnWidth = widths.description * TOTAL_WIDTH;
+    } else if (rowIndex === 1 && columnIndex === 3) {
+      disp = columns.slice(3, 4);
+      // columnWidth = widths.school * TOTAL_WIDTH;
+    } else if (rowIndex === 1 && columnIndex === 4) {
+      disp = columns.slice(4, 5);
+      // columnWidth = widths.jobArea * TOTAL_WIDTH;
+    } else if (rowIndex === 1 && columnIndex === 5) {
+      disp = columns.slice(5, 6);
+      // columnWidth = widths.phone * TOTAL_WIDTH;
+    } else if (rowIndex === 1 && columnIndex === 6) {
+      disp = columns.slice(6, 7);
+      // columnWidth = widths.hobby * TOTAL_WIDTH;
+    }
+    // this.setState({columnWidth})
+    return (
+      <div
+        key={key}
+        style={{
+          ...style,
+          // borderTop: "1px solid",
+          // borderRight: "1px",
+          // borderLeft: "1px",
+          // borderBottom: "1px"
+        }}
+      >
+        {disp}
+        {/* {list[rowIndex][columnIndex]} */}
+      </div>
+    );
+  };
+
+  // cellSizeAndPositionGetter = ({ index }) => {
+  //   // console.log("colm", this.props.list)
+  //   // const { list } = this.props;
+  //   const datum = list;
+
+  //   return {
+  //     width: 200,
+  //     height: 50,
+  //     name: datum.name,
+  //     location: datum.location,
+  //     school: datum.school,
+  //     jobArea: datum.jobArea,
+  //     x: 13,
+  //     y: 34
+  //   };
+  // };
+
+  headerRowRenderer = ({ className, columns, style }) => {
+    // console.log("columns", columns);
+    console.log("columns", columns)
+    const { widths } = this.state;
+    let columnWidth = columns.map(col=> {
+      console.log("object", widths[col.props.children.key])
+      if(widths[col.props.children.key] !== undefined){
+        return widths[col.props.children.key] * TOTAL_WIDTH
+      } else return 0
+    })
+    // if (rowIndex === 0 && columnIndex === 0) {
+      columnWidth = widths.name * TOTAL_WIDTH;
+    // } else if (rowIndex === 0 && columnIndex === 1) {
+      columnWidth = widths.location * TOTAL_WIDTH + widths.description * TOTAL_WIDTH + widths.school * TOTAL_WIDTH;
+    // } else if (rowIndex === 0 && columnIndex === 2) {
+      columnWidth = widths.jobArea * TOTAL_WIDTH + widths.phone * TOTAL_WIDTH + widths.hobby * TOTAL_WIDTH;
+    // } else if (rowIndex === 1 && columnIndex === 0) {
+      columnWidth = widths.name * TOTAL_WIDTH;
+    // } else if (rowIndex === 1 && columnIndex === 1) {
+      columnWidth = widths.location * TOTAL_WIDTH;
+    // } else if (rowIndex === 1 && columnIndex === 2) {
+      columnWidth = widths.description * TOTAL_WIDTH;
+    // } else if (rowIndex === 1 && columnIndex === 3) {
+      columnWidth = widths.school * TOTAL_WIDTH;
+    // } else if (rowIndex === 1 && columnIndex === 4) {
+      columnWidth = widths.jobArea * TOTAL_WIDTH;
+    // } else if (rowIndex === 1 && columnIndex === 5) {
+      columnWidth = widths.phone * TOTAL_WIDTH;
+    // } else if (rowIndex === 1 && columnIndex === 6) {
+      columnWidth = widths.hobby * TOTAL_WIDTH;
+    // }
+    return (
+      <div className={className} role="row" style={style}>
+        <Grid
+          cellRenderer={props => this.cellRenderer({ ...props, columns })}
+          columnCount={7}
+          columnWidth={columnWidth}
+          // columnWidth={widths[columns.props.key] * TOTAL_WIDTH}
+          // columnWidth={100}
+          height={57}
+          rowCount={2}
+          rowHeight={15}
+          width={1500}
+        />
+        {/* <Grid
+          cellRenderer={props => this.cellRenderer({ ...props, columns })}
+          columnCount={7}
+          columnWidth={100}
+          height={50}
+          rowCount={2}
+          rowHeight={50}
+          width={1500}
+        /> */}
+
+        {/* <table className="headerBorder">
+          <tbody>
+            <tr>
+              <th width={widths.name * TOTAL_WIDTH} rowSpan="2">
+                {columns.slice(0, 1)}
+              </th>
+              <th colSpan="3">Main 1</th>
+              <th colSpan="3">Main 2</th>
+            </tr>
+            <tr>
+              <th width={widths.location * TOTAL_WIDTH}>{columns.slice(1, 2)}</th>
+              <th width={widths.description * TOTAL_WIDTH}>{columns.slice(2, 3)}</th>
+              <th width={widths.school * TOTAL_WIDTH}>{columns.slice(3, 4)}</th>
+              <th width={widths.jobArea * TOTAL_WIDTH}>{columns.slice(4, 5)}</th>
+              <th width={widths.phone * TOTAL_WIDTH}>{columns.slice(5, 6)}</th>
+              <th width={widths.hobby * TOTAL_WIDTH}>{columns.slice(6, 7)}</th>
+            </tr>
+          </tbody>
+        </table> */}
+      </div>
+    );
+  };
+
+  render() {
+    const { list } = this.props;
+    const { widths } = this.state;
+    return (
+      <Table
+        width={TOTAL_WIDTH}
+        height={500}
+        headerHeight={50}
+        rowHeight={30}
+        rowCount={list.length}
+        rowGetter={({ index }) => list[index]}
+        headerRowRenderer={this.headerRowRenderer}
+      >
+        <Column headerRenderer={this.headerRenderer} dataKey="name" label="Name" width={widths.name * TOTAL_WIDTH} />
+        <Column
+          headerRenderer={this.headerRenderer}
+          dataKey="location"
+          label="Location"
+          width={widths.location * TOTAL_WIDTH}
+        />
+        <Column
+          headerRenderer={this.headerRenderer}
+          dataKey="description"
+          label="Description"
+          width={widths.description * TOTAL_WIDTH}
+        />
+        <Column headerRenderer={this.headerRenderer} dataKey="school" label="School" width={widths.school * TOTAL_WIDTH} />
+        <Column headerRenderer={this.headerRenderer} dataKey="jobArea" label="Job Area" width={widths.jobArea * TOTAL_WIDTH} />
+        <Column headerRenderer={this.headerRenderer} dataKey="phone" label="Phone" width={widths.phone * TOTAL_WIDTH} />
+        <Column headerRenderer={this.headerRenderer} dataKey="hobby" label="Hobby" width={widths.hobby * TOTAL_WIDTH} />
+      </Table>
+    );
+  }
+
+  headerRenderer = ({ dataKey, label }) => {
+    return (
+      <React.Fragment key={dataKey}>
+        <div className="ReactVirtualized__Table__headerTruncatedText">{label}</div>
+        <Draggable
+          axis="x"
+          defaultClassName="DragHandle"
+          defaultClassNameDragging="DragHandleActive"
+          onDrag={(_, { deltaX }) => {
+            this.resizeRow({
+              dataKey,
+              deltaX
+            });
+          }}
+          position={{ x: 0 }}
+          zIndex={999}
+        >
+          <span style={{ display: "block", width: "5px", float: "right" }} className="DragHandleIcon">
+            ?
+          </span>
+        </Draggable>
+      </React.Fragment>
+    );
+  };
+
+  resizeRow = ({ dataKey, deltaX }) =>
+    this.setState(prevState => {
+      const prevWidths = prevState.widths;
+      const percentDelta = deltaX / TOTAL_WIDTH;
+
+      console.log("prevWidths", prevWidths);
+
+      // This is me being lazy :)
+      let nextDataKey; //= dataKey === "name" ? "location" : "description";
+      switch (dataKey) {
+        case "name":
+          nextDataKey = "location";
+          break;
+        case "location":
+          nextDataKey = "description";
+          break;
+        case "description":
+          nextDataKey = "school";
+          break;
+        case "school":
+          nextDataKey = "jobArea";
+          break;
+        case "jobArea":
+          nextDataKey = "phone";
+          break;
+        case "phone":
+          nextDataKey = "hobby";
+          break;
+        default:
+          break;
+      }
+      return {
+        widths: {
+          ...prevWidths,
+          [dataKey]: prevWidths[dataKey] + percentDelta,
+          [nextDataKey]: prevWidths[nextDataKey] - percentDelta
+        }
+      };
+    });
+}
+
+
+
 import React from "react";
 import { Column, Table } from "react-virtualized";
 import Draggable from "react-draggable";
