@@ -14,6 +14,23 @@ Opencv：opencvには、YOLOと連携するディープラーニングフレー�
 長所：opencv以外のものをインストールする必要なしに動作します。
 短所：CPUでのみ機能するため、ビデオをリアルタイムで処理するために非常に高速にすることはできません。
 
+
+Make the directory and navigate in it. Clone the OpenCV repository by running the following command:
+$ mkdir ~/opencv_build && cd ~/opencv_build
+$ git clone https://github.com/opencv/opencv.git
+
+
+Then, clone the OpenCV contrib repositories by using the following command:
+$ git clone https://github.com/opencv/opencv_contrib.git
+
+
+At the time of writing this article, OpenCV 4.4.0 is available as the latest stable version.
+Step 3: Setup OpenCV build
+Once the download is completed, create a directory named ‘build’ and navigate to it as follows:
+$ cd ~/opencv_build/opencv
+$ mkdir -p build && cd build
+
+
 cmake -D CMAKE_BUILD_TYPE=RELEASE \
 -D CMAKE_INSTALL_PREFIX=/usr/local \
 -D INSTALL_C_EXAMPLES=ON \
