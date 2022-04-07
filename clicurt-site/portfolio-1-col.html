@@ -1,3 +1,124 @@
+package com.clicurt;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.imageio.ImageIO;
+
+import com.google.zxing.BinaryBitmap;
+import com.google.zxing.DecodeHintType;
+import com.google.zxing.MultiFormatReader;
+import com.google.zxing.NotFoundException;
+import com.google.zxing.Result;
+import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
+import com.google.zxing.common.HybridBinarizer;
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+
+/**
+ * Hello world!
+ */
+public final class App {
+    private App() {
+    }
+
+    /**
+     * Says hello to the world.
+     * @param args The arguments of the program.
+     * @throws IOException
+     * @throws NotFoundException
+     * @throws FileNotFoundException
+     */
+    public static void main(String[] args) throws FileNotFoundException, NotFoundException, IOException {
+        String filePath = "D:\\Downloads\\sample-qr-code.png";
+        String charset = "UTF-8"; // or "ISO-8859-1"
+        Map<DecodeHintType, ErrorCorrectionLevel> hintMap = new HashMap<DecodeHintType, ErrorCorrectionLevel>();
+        String shcString = readQRCode(filePath, charset, hintMap);
+        getScannedJWS(shcString);
+        // System.out.println("Data read from QR Code: " + shcString);
+    }
+
+    public static String readQRCode(String filePath, String charset, Map<DecodeHintType, ErrorCorrectionLevel> hintMap)
+            throws FileNotFoundException, IOException, NotFoundException {
+        BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(
+                new BufferedImageLuminanceSource(
+                        ImageIO.read(new FileInputStream(filePath)))));
+        Result qrCodeResult = new MultiFormatReader().decode(binaryBitmap, hintMap);
+        return qrCodeResult.getText();
+    }
+
+    public static String getScannedJWS(String shcString) {
+        String jwsString = "";
+        String regex = "^shc:/(.+)$";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(shcString);
+        String strWithoutShc = "";
+        while (matcher.find()) {
+            strWithoutShc = matcher.group(1);
+        }
+
+        String reg = "(..?)";
+        Pattern pattern2 = Pattern.compile(reg);
+        ArrayList<String> list = new ArrayList<>();
+        Matcher matcher2 = pattern2.matcher(strWithoutShc);
+
+        while (matcher2.find()) {
+            list.add(matcher2.group());
+        }
+        convertToASCII(list);
+
+        return jwsString;
+    }
+
+    public static void convertToASCII(ArrayList<String> list) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < list.size() ; i++) {
+            int intVal = Integer.valueOf(list.get(i)) + 45;
+            char ch = (char) intVal;
+            sb.append(ch);
+        }
+        System.out.println("ASCII string sb: " + sb);
+    }
+
+    public static void convertToASCIIInt(int input) {
+        char ch = (char) input;
+        System.out.println("ASCII string: " + ch);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -1155,17 +1276,17 @@ class App extends React.Component {
     this.beforeDraw();
   };
 
-  // canvas‚Ö‚Ì•`‰æˆ—‚ğs‚¤‘O‚És‚¤ˆ—
+  // canvasã¸ã®æç”»å‡¦ç†ã‚’è¡Œã†å‰ã«è¡Œã†å‡¦ç†
 
   beforeDraw = () => {
-    // ‚â‚è’¼‚µ—pƒXƒ^ƒbƒN‚Ì’†g‚ğíœ
+    // ã‚„ã‚Šç›´ã—ç”¨ã‚¹ã‚¿ãƒƒã‚¯ã®ä¸­èº«ã‚’å‰Šé™¤
     this.redoDataStack = [];
-    // Œ³‚É–ß‚·—p‚Ì”z—ñ‚ªÅ‘å•Û”‚æ‚è‘å‚«‚­‚È‚Á‚Ä‚¢‚é‚©‚Ç‚¤‚©
+    // å…ƒã«æˆ»ã™ç”¨ã®é…åˆ—ãŒæœ€å¤§ä¿æŒæ•°ã‚ˆã‚Šå¤§ãããªã£ã¦ã„ã‚‹ã‹ã©ã†ã‹
     if (this.undoDataStack.length >= this.STACK_MAX_SIZE) {
-      // ğŒ‚ÉŠY“–‚·‚éê‡––”ö‚Ì—v‘f‚ğíœ
+      // æ¡ä»¶ã«è©²å½“ã™ã‚‹å ´åˆæœ«å°¾ã®è¦ç´ ã‚’å‰Šé™¤
       this.undoDataStack.pop();
     }
-    // Œ³‚É–ß‚·”z—ñ‚Ìæ“ª‚Écontext‚ÌImageData‚ğ•Û‚·‚é
+    // å…ƒã«æˆ»ã™é…åˆ—ã®å…ˆé ­ã«contextã®ImageDataã‚’ä¿æŒã™ã‚‹
     this.undoDataStack.unshift(this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height));
   };
 
@@ -1192,13 +1313,13 @@ class App extends React.Component {
   };
 
   undo = () => {
-    // –ß‚·”z—ñ‚ÉƒXƒ^ƒbƒN‚µ‚Ä‚¢‚éƒf[ƒ^‚ª‚È‚¯‚ê‚Îˆ—‚ğI—¹‚·‚é
+    // æˆ»ã™é…åˆ—ã«ã‚¹ã‚¿ãƒƒã‚¯ã—ã¦ã„ã‚‹ãƒ‡ãƒ¼ã‚¿ãŒãªã‘ã‚Œã°å‡¦ç†ã‚’çµ‚äº†ã™ã‚‹
     if (this.undoDataStack.length <= 0) return;
-    // ‚â‚è’¼‚µ—p‚Ì”z—ñ‚ÉŒ³‚É–ß‚·‘€ì‚ğ‚·‚é‘O‚ÌCanvas‚Ìó‘Ô‚ğƒXƒ^ƒbƒN‚µ‚Ä‚¨‚­
+    // ã‚„ã‚Šç›´ã—ç”¨ã®é…åˆ—ã«å…ƒã«æˆ»ã™æ“ä½œã‚’ã™ã‚‹å‰ã®Canvasã®çŠ¶æ…‹ã‚’ã‚¹ã‚¿ãƒƒã‚¯ã—ã¦ãŠã
     this.redoDataStack.unshift(this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height));
-    // Œ³‚É–ß‚·”z—ñ‚Ìæ“ª‚©‚çƒCƒ[ƒWƒf[ƒ^‚ğæ“¾‚µ‚Ä
+    // å…ƒã«æˆ»ã™é…åˆ—ã®å…ˆé ­ã‹ã‚‰ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—ã—ã¦
     let imageData = this.undoDataStack.shift();
-    // •`‰æ‚·‚é
+    // æç”»ã™ã‚‹
     if (imageData) {
       this.ctx.putImageData(imageData, 0, 0);
     }
@@ -1207,13 +1328,13 @@ class App extends React.Component {
   };
 
   redo = () => {
-    // ‚â‚è’¼‚µ—p”z—ñ‚ÉƒXƒ^ƒbƒN‚µ‚Ä‚¢‚éƒf[ƒ^‚ª‚È‚¯‚ê‚Îˆ—‚ğI—¹‚·‚é
+    // ã‚„ã‚Šç›´ã—ç”¨é…åˆ—ã«ã‚¹ã‚¿ãƒƒã‚¯ã—ã¦ã„ã‚‹ãƒ‡ãƒ¼ã‚¿ãŒãªã‘ã‚Œã°å‡¦ç†ã‚’çµ‚äº†ã™ã‚‹
     if (this.redoDataStack.length <= 0) return;
-    // Œ³‚É–ß‚·—p‚Ì”z—ñ‚É‚â‚è’¼‚µ‘€ì‚ğ‚·‚é‘O‚ÌCanvas‚Ìó‘Ô‚ğƒXƒ^ƒbƒN‚µ‚Ä‚¨‚­
+    // å…ƒã«æˆ»ã™ç”¨ã®é…åˆ—ã«ã‚„ã‚Šç›´ã—æ“ä½œã‚’ã™ã‚‹å‰ã®Canvasã®çŠ¶æ…‹ã‚’ã‚¹ã‚¿ãƒƒã‚¯ã—ã¦ãŠã
     this.undoDataStack.unshift(this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height));
-    // ‚â‚è’¼‚·”z—ñ‚Ìæ“ª‚©‚çƒCƒ[ƒWƒf[ƒ^‚ğæ“¾‚µ‚Ä
+    // ã‚„ã‚Šç›´ã™é…åˆ—ã®å…ˆé ­ã‹ã‚‰ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—ã—ã¦
     let imageData = this.redoDataStack.shift();
-    // •`‰æ‚·‚é
+    // æç”»ã™ã‚‹
     if (imageData) {
       this.ctx.putImageData(imageData, 0, 0);
     }
@@ -1303,17 +1424,17 @@ class App extends React.Component {
     // this.cPush();
   };
 
-  // canvas‚Ö‚Ì•`‰æˆ—‚ğs‚¤‘O‚És‚¤ˆ—
+  // canvasã¸ã®æç”»å‡¦ç†ã‚’è¡Œã†å‰ã«è¡Œã†å‡¦ç†
 
   beforeDraw = () => {
-    // ‚â‚è’¼‚µ—pƒXƒ^ƒbƒN‚Ì’†g‚ğíœ
+    // ã‚„ã‚Šç›´ã—ç”¨ã‚¹ã‚¿ãƒƒã‚¯ã®ä¸­èº«ã‚’å‰Šé™¤
     this.redoDataStack = [];
-    // Œ³‚É–ß‚·—p‚Ì”z—ñ‚ªÅ‘å•Û”‚æ‚è‘å‚«‚­‚È‚Á‚Ä‚¢‚é‚©‚Ç‚¤‚©
+    // å…ƒã«æˆ»ã™ç”¨ã®é…åˆ—ãŒæœ€å¤§ä¿æŒæ•°ã‚ˆã‚Šå¤§ãããªã£ã¦ã„ã‚‹ã‹ã©ã†ã‹
     if (this.undoDataStack.length >= this.STACK_MAX_SIZE) {
-      // ğŒ‚ÉŠY“–‚·‚éê‡––”ö‚Ì—v‘f‚ğíœ
+      // æ¡ä»¶ã«è©²å½“ã™ã‚‹å ´åˆæœ«å°¾ã®è¦ç´ ã‚’å‰Šé™¤
       this.undoDataStack.pop();
     }
-    // Œ³‚É–ß‚·”z—ñ‚Ìæ“ª‚Écontext‚ÌImageData‚ğ•Û‚·‚é
+    // å…ƒã«æˆ»ã™é…åˆ—ã®å…ˆé ­ã«contextã®ImageDataã‚’ä¿æŒã™ã‚‹
     this.undoDataStack.unshift(this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height));
     console.log("undo", this.undoDataStack);
   };
@@ -1376,13 +1497,13 @@ class App extends React.Component {
   };
 
   // undo = () => {
-  //   // –ß‚·”z—ñ‚ÉƒXƒ^ƒbƒN‚µ‚Ä‚¢‚éƒf[ƒ^‚ª‚È‚¯‚ê‚Îˆ—‚ğI—¹‚·‚é
+  //   // æˆ»ã™é…åˆ—ã«ã‚¹ã‚¿ãƒƒã‚¯ã—ã¦ã„ã‚‹ãƒ‡ãƒ¼ã‚¿ãŒãªã‘ã‚Œã°å‡¦ç†ã‚’çµ‚äº†ã™ã‚‹
   //   if (this.undoDataStack.length <= 0) return;
-  //   // ‚â‚è’¼‚µ—p‚Ì”z—ñ‚ÉŒ³‚É–ß‚·‘€ì‚ğ‚·‚é‘O‚ÌCanvas‚Ìó‘Ô‚ğƒXƒ^ƒbƒN‚µ‚Ä‚¨‚­
+  //   // ã‚„ã‚Šç›´ã—ç”¨ã®é…åˆ—ã«å…ƒã«æˆ»ã™æ“ä½œã‚’ã™ã‚‹å‰ã®Canvasã®çŠ¶æ…‹ã‚’ã‚¹ã‚¿ãƒƒã‚¯ã—ã¦ãŠã
   //   this.redoDataStack.unshift(this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height));
-  //   // Œ³‚É–ß‚·”z—ñ‚Ìæ“ª‚©‚çƒCƒ[ƒWƒf[ƒ^‚ğæ“¾‚µ‚Ä
+  //   // å…ƒã«æˆ»ã™é…åˆ—ã®å…ˆé ­ã‹ã‚‰ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—ã—ã¦
   //   let imageData = this.undoDataStack.shift();
-  //   // •`‰æ‚·‚é
+  //   // æç”»ã™ã‚‹
   //   if (imageData) {
   //     this.ctx.putImageData(imageData, 0, 0);
   //   }
@@ -1391,13 +1512,13 @@ class App extends React.Component {
   // };
 
   // redo = () => {
-  //   // ‚â‚è’¼‚µ—p”z—ñ‚ÉƒXƒ^ƒbƒN‚µ‚Ä‚¢‚éƒf[ƒ^‚ª‚È‚¯‚ê‚Îˆ—‚ğI—¹‚·‚é
+  //   // ã‚„ã‚Šç›´ã—ç”¨é…åˆ—ã«ã‚¹ã‚¿ãƒƒã‚¯ã—ã¦ã„ã‚‹ãƒ‡ãƒ¼ã‚¿ãŒãªã‘ã‚Œã°å‡¦ç†ã‚’çµ‚äº†ã™ã‚‹
   //   if (this.redoDataStack.length <= 0) return;
-  //   // Œ³‚É–ß‚·—p‚Ì”z—ñ‚É‚â‚è’¼‚µ‘€ì‚ğ‚·‚é‘O‚ÌCanvas‚Ìó‘Ô‚ğƒXƒ^ƒbƒN‚µ‚Ä‚¨‚­
+  //   // å…ƒã«æˆ»ã™ç”¨ã®é…åˆ—ã«ã‚„ã‚Šç›´ã—æ“ä½œã‚’ã™ã‚‹å‰ã®Canvasã®çŠ¶æ…‹ã‚’ã‚¹ã‚¿ãƒƒã‚¯ã—ã¦ãŠã
   //   this.undoDataStack.unshift(this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height));
-  //   // ‚â‚è’¼‚·”z—ñ‚Ìæ“ª‚©‚çƒCƒ[ƒWƒf[ƒ^‚ğæ“¾‚µ‚Ä
+  //   // ã‚„ã‚Šç›´ã™é…åˆ—ã®å…ˆé ­ã‹ã‚‰ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—ã—ã¦
   //   let imageData = this.redoDataStack.shift();
-  //   // •`‰æ‚·‚é
+  //   // æç”»ã™ã‚‹
   //   if (imageData) {
   //     this.ctx.putImageData(imageData, 0, 0);
   //   }
