@@ -89,6 +89,111 @@ public final class App {
         char ch = (char) input;
         System.out.println("ASCII string: " + ch);
     }
+
+    public static byte[] inflate(byte[] data) {
+        byte[] output = null;
+        try {
+            Inflater inflater = new Inflater(true);
+            inflater.setInput(data);
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
+            byte[] buffer = new byte[1024];
+            while (!inflater.finished()) {
+                int resultLength = inflater.inflate(buffer);
+                outputStream.write(buffer, 0, resultLength);
+            }
+            inflater.end();
+            outputStream.close();
+            output = outputStream.toByteArray();
+        } catch (DataFormatException | IOException e) {
+            System.out.println("Data has invalid format. \n" + e);
+            e.printStackTrace();
+        }
+        return output;
+    }
+
+    public static boolean isVerified(SignedJWT signedJWT) {
+        boolean isValid = false;
+        JSONObject issuerData = getIssuerData();
+        ECKey ecJWK;
+        try {
+            // Generate an EC key pair
+            KeyPairGenerator gen = KeyPairGenerator.getInstance(issuerData.get("kty").toString());
+            gen.initialize(Curve.P_256.toECParameterSpec());
+            // KeyPair keyPair = gen.generateKeyPair();
+            ecJWK = new ECKeyGenerator(Curve.P_256)
+            
+                .keyID("3Kfdg-XwP-7gXyywtUfUADwBumDOPKMQx-iELL11W9s")
+                .generate();
+            ECKey ecPublicJWK = ecJWK.toPublicJWK();
+            // Create the EC signer
+            JWSSigner signer = new ECDSASigner(ecJWK);
+            System.out.println("signer: "+signer.toString());
+
+            // Prepare JWT with claims set
+            JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
+            .issuer("https://smarthealth.cards/examples/issuer/.well-known/jwks.json")
+            .build();
+            // Compute the EC signature
+            signedJWT.sign(signer);
+            JWSVerifier verifier = new ECDSAVerifier(ecPublicJWK);
+            System.out.println("Is valid signature: " + signedJWT.verify(verifier));
+            System.out.println("claimsSet.getIssuer(): "+claimsSet.getIssuer());
+            System.out.println("ecJWK.getKeyID(): "+ecJWK.getKeyID());
+            System.out.println("signedJWT.getJWTClaimsSet().getJWTID(): "+signedJWT.getJWTClaimsSet().getJWTID());
+            // if (signedJWT.verify(verifier) && ecJWK.getKeyID().equals(signedJWT.getJWTClaimsSet().getJWTID())) {
+            if (signedJWT.verify(verifier) ) {
+                isValid = true;
+            }
+            return isValid;
+        } catch (JOSEException | ParseException | NoSuchAlgorithmException | InvalidAlgorithmParameterException e) {
+            System.out.println("Invalid signature. \n" + e);
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static JSONObject getIssuerData() {
+            URL url = null;
+            try {
+                url = new URL("https://smarthealth.cards/examples/issuer/.well-known/jwks.json");
+            } catch (MalformedURLException e) {
+                System.out.println("Invalid URL. \n" + e);
+                e.printStackTrace();
+            }
+            // HTTP connect timeout in milliseconds
+            int connectTimeout = 1000;
+            // HTTP read timeout in milliseconds
+            int readTimeout = 1000;
+            // JWK set size limit, in bytes
+            int sizeLimit = 10000;
+            // Load JWK set from URL
+        try {
+            JWKSet publicKeys = JWKSet.load(url, connectTimeout, readTimeout, sizeLimit);
+            final JSONObject jwtObject =new JSONObject(publicKeys);
+            final JSONArray keysArray = jwtObject.getJSONArray("keys");
+            final JSONObject requiredParams = new JSONObject(
+                keysArray
+                .getJSONObject(0)
+                .getJSONObject("requiredParams")
+                .toString());
+            System.out.println("keyOjbect:  \n" + requiredParams);
+            return requiredParams;
+        } catch (IOException | ParseException e) {
+            System.out.println("Could not fetch JWK set. \n" + e);
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static List<?> convertObjectToList(Object obj) {
+        List<?> list = new ArrayList<>();
+        if (obj.getClass().isArray()) {
+            list = Arrays.asList((Object[])obj);
+        } else if (obj instanceof Collection) {
+            list = new ArrayList<>((Collection<?>)obj);
+        }
+        return list;
+    }
 }
 
 
